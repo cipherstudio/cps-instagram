@@ -1,0 +1,175 @@
+/* navbar */
+.header {
+    padding: 0 12px;
+    height: 57px;
+    background-color: #fff;
+    /*border-bottom: solid 1px #e3e3e3;*/
+}
+.desktop .header, .desktop.top-section.collapsed .nav .button {
+    height: 49px;
+}
+.ig-info {
+    height: 100%;
+    padding: 9px 0;
+}
+:not(.desktop) .ig-info {
+    background-color: #fff;
+    height: 56px;
+}
+.desktop .ig-info {
+    padding: 0;
+    height: 49px;
+    /*border-bottom: solid 1px #e3e3e3;*/
+}
+.no-gutter [class*="col-"]:first-child {
+    padding-right: 0;
+}
+
+.ig-avatar, .ig-info-user, .ig-link, .video-wrapper {
+    position: relative;
+}
+.ig-avatar {
+    margin: 0 3px 0 4px;
+    background-color: #e0e0e0;
+    border-radius: 50%;
+    height: 28px;
+    width: 28px;
+}
+.store-name {
+    left: 8px;
+    color: #060606;
+    font-size: 15px;
+    font-weight: 700;
+    position: relative;
+    border-left: 1px solid #8c8c8c;
+    padding-left: 12px;
+    display: inline-block;
+    height: 28px;
+}
+
+.desktop .ig-info-button {
+    position: relative;
+    height: 49px;
+    display: inline-block;
+    padding-right: 18px;
+    border-top: none;
+    top: 10px;
+}
+
+@media only screen and (min-width: 1200px) {
+    .desktop.content-container, .desktop.top-section .inner {
+        max-width: 1200px;
+        margin: auto;
+    }
+}
+
+/* content */
+
+hr {
+    display: block;
+    height: 1px;
+    border: 0;
+    border-top: 1px solid #ccc;
+    margin: 1em 0;
+    padding: 0;
+}
+
+.content-container {
+    margin: auto;
+    padding-bottom: 6px;
+    z-index: 0;
+    position: relative;
+}
+
+.content-container-inner {
+    padding-right: 4px;
+    padding-left: 4px;
+}
+
+.loading-view {
+    color: #18ae8f;
+    text-align: center;
+    font-size: 30px;
+}
+
+.mobile .callout .large, .subtitle {
+    font-size: 15px;
+}
+
+.subtitle {
+    margin: 0;
+    color: #7e7e7e;
+    padding: 18px 0 6px;
+}
+
+.subtitle hr {
+    position: relative;
+    top: 3px;
+    margin: 5px 0 4px;
+    width: 110%;
+}
+
+.desktop .subtitle {
+    padding-top: 4px;
+}
+
+.desktop .subtitle hr {
+    width: 100%;
+}
+
+.row.small-gutter [class*=col-]:first-child, 
+.row.small-gutter [class*=col-]:last-child, 
+.row.small-gutter [class*=col-]:not(:first-child):not(:last-child) {
+    padding-right: 6px;
+    padding-left: 6px;
+}
+
+.content {
+    text-align: center;
+    font-size: 15px;
+    margin: 0;
+    padding: 6px 0;
+}
+
+.product-card {
+    padding-bottom: 12px;
+}
+
+.product-card-box {
+    position: relative;
+    width: 100%;
+}
+
+.ig-avatar, .ig-info-user, .ig-link, .video-wrapper {
+    position: relative;
+}
+
+.product-card-box a {
+    display: block;
+}
+
+.squared-image-div, .squared-product-details-image-div {
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: 50% 50%;
+    width: 100%;
+    height: 0;
+    padding-bottom: 100%;
+}
+
+.squared-image-div {
+    background-color: #fff;
+}
+
+@media only screen and (min-width: 1224px) and (orientation: landscape) {
+    .content-container {
+        padding-top: 58px;
+    }
+}
+
+@media only screen and (min-width: 1200px) {
+    .desktop.content-container, .desktop.top-section .inner {
+        max-width: 1200px;
+        margin: auto;
+    }
+}
