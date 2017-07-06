@@ -24,16 +24,39 @@ Route::get('/home', 'HomeController@index')->name('home');
 # BEGIN: CPS Instagram
 
 Route::get('/', function () {
-    return view('instagram.index');
+    return view('instagram.index.index');
 });
+
+Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
 
-Auth::routes();
+
 
 // END: CPS Instagram
 
 
+// @todo disable route login, register, forgot password
+
+
+// api
+Route::get('instagram/oauth', ['uses' => 'Instagram\ApiController@oauth', 'as' => 'instagram.api.oauth']);
+
+
 Route::group(['prefix' => 'admin'], function () {
     Voyager::routes();
+
+    // @see vendor/tcg/voyager/routes/voyager.php
+    $namespacePrefix = '\\'.config('voyager.controllers.namespace').'\\';
+    Route::group(['middleware' => 'admin.user'], function () use ($namespacePrefix) {
+
+        // @todo instagram-media/sync {closure}
+        Route::get('instagram-media-sync', ['uses' => 'Instagram\SyncController@index', 'as' => 'instagram.sync.index']);
+
+
+    });
+
+    
+
+
 });

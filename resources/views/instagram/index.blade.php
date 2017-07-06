@@ -1,45 +1,33 @@
-@extends('instagram.layouts.index')
+<!doctype html>
+<html lang="{{ config('app.locale') }}">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
 
-@section('content')
-    <div class="content-container featured desktop">
-        <div class="content-container-inner">
+        <title>INSTAGRAM</title>
 
-            {{-- switch loading --}}
-            <div class="loading-view"></div>
-            <div class="">
-                <div class="row small-gutter subtitle">
-                    <div class="col-xs-12">
-                        <div>
-                            <span>Click an image to shop</span>
-                        </div>
-                        <hr />
-                    </div>
-                </div>
-                <div infinite-scroll="" infinite-scroll-immediate-check="false" infinite-scroll-distance="0.5">
-                    <div class="row small-gutter content">
-                        @for ($i = 0; $i < 20; $i++)
-                            <product-card class="product-card col-xs-3">
-                                <div class="product-card-box">
-                                    <div class="product-card-box-inner">
-                                        <div class="video-wrapper"></div>
-                                        <span>
-                                            <span>
-                                                <span>
-                                                    <a href="">
-                                                        <div class="squared-image-div" style="background-image: url(https://instagram.fbkk5-7.fna.fbcdn.net/t51.2885-15/s640x640/sh0.08/e35/17076128_619774714876000_9147438196177502208_n.jpg);">
+        <!-- Fonts -->
+        {{--
+        <link href="https://fonts.googleapis.com/css?family=Raleway:100,600" rel="stylesheet" type="text/css">
+        --}}
 
-                                                        </div>
-                                                    </a>
-                                                </span>
-                                            </span>
-                                        </span>
-                                    </div>
-                                </div>
-                            </product-card>
-                        @endfor
-                    </div>
-                </div>
+        <!-- CSS Libs -->
+        <link rel="stylesheet" type="text/css" href="{{ URL::asset('css/app.css') }}">
+
+        <!-- Styles -->
+        <style>
+           
+        </style>
+    </head>
+    <body>
+        <div id="cps" class="fade in">
+            @include('instagram.partials.index.navbar')
+            <div class="main-container">
+                @yield('content')
             </div>
         </div>
-    </div>
-@endsection
+    <script type="text/javascript" src="{{ URL::asset('js/app.js') }}"></script>
+
+    </body>
+</html>

@@ -21,6 +21,11 @@
 
 require __DIR__.'/../bootstrap/autoload.php';
 
+// @fixed for debug
+// @author rathasit.j@cipher.co.th
+require __DIR__.'/../bootstrap/debug.php';
+
+
 /*
 |--------------------------------------------------------------------------
 | Turn On The Lights

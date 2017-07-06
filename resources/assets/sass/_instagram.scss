@@ -131,11 +131,11 @@ hr {
     padding: 6px 0;
 }
 
-.product-card {
+.photo-card {
     padding-bottom: 12px;
 }
 
-.product-card-box {
+.photo-card-box {
     position: relative;
     width: 100%;
 }
@@ -144,11 +144,11 @@ hr {
     position: relative;
 }
 
-.product-card-box a {
+.photo-card-box a {
     display: block;
 }
 
-.squared-image-div, .squared-product-details-image-div {
+.squared-photo-div, .squared-photo-details-image-div {
     background-size: contain;
     background-repeat: no-repeat;
     background-position: 50% 50%;
@@ -157,12 +157,12 @@ hr {
     padding-bottom: 100%;
 }
 
-.squared-image-div {
+.squared-photo-div {
     background-color: #fff;
 }
 
 @media only screen and (min-width: 1224px) and (orientation: landscape) {
-    .content-container {
+    .main-container .content-container {
         padding-top: 58px;
     }
 }
