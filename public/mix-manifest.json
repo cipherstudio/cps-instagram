@@ -2,5 +2,6 @@
   "/js/app.js": "/js/app.js",
   "/css/app.css": "/css/app.css",
   "/css/instagram/instagram.css": "/css/instagram/instagram.css",
-  "/css/instagram.css": "/css/instagram.css"
+  "/css/instagram.css": "/css/instagram.css",
+  "/js/instagram.js": "/js/instagram.js"
 }

@@ -40,7 +40,7 @@ Route::get('/home', 'HomeController@index')->name('home');
 
 
 // api
-Route::get('instagram/oauth', ['uses' => 'Instagram\ApiController@oauth', 'as' => 'instagram.api.oauth']);
+Route::get('instagram/oauth', ['uses' => 'Instagram\SyncController@oauth', 'as' => 'instagram.sync.oauth']);
 
 
 Route::group(['prefix' => 'admin'], function () {
@@ -52,7 +52,7 @@ Route::group(['prefix' => 'admin'], function () {
 
         // @todo instagram-media/sync {closure}
         Route::get('instagram-media-sync', ['uses' => 'Instagram\SyncController@index', 'as' => 'instagram.sync.index']);
-
+        Route::get('instagram-media-sync/load', ['uses' => 'Instagram\SyncController@load', 'as' => 'instagram.sync.load']);
 
     });
 

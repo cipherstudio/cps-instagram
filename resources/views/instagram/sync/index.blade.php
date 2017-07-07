@@ -10,30 +10,8 @@
 
 @section('content')
 
-    <div infinite-scroll="" infinite-scroll-immediate-check="false" infinite-scroll-distance="0.5">
-        <div class="row small-gutter content">
-            @foreach ($items as $item)
-                <div class="photo-card col-xs-2">
-                    <div class="photo-card-box">
-                        <div class="photo-card-box-inner">
-                            <div class="video-wrapper"></div>
-                            <span>
-                                <span>
-                                    <span>
-                                        <a href="">
-                                            <div class="squared-photo-div" style="background-image: url({{ $item['images']['standard_resolution']['url'] }});">
-
-                                            </div>
-                                        </a>
-                                    </span>
-                                </span>
-                            </span>
-                        </div>
-                    </div>
-                </div>
-            @endforeach
-        </div>
-    </div>
+    <instagram></instagram>
+    
 
 @stop
 
@@ -42,5 +20,10 @@
 @stop
 
 @section('javascript')
-
+<script type="text/javascript">
+    $('body')
+        .data('syncUrl', '{{ route('instagram.sync.load') }}')
+        .data('syncData', {!! json_encode($syncData) !!});
+</script>
+<script type="text/javascript" src="{{ URL::asset('js/instagram.js') }}"></script>
 @stop

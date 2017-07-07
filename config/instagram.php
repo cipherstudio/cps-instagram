@@ -22,7 +22,9 @@ return [
             'get_current_account' => 'users/self',
             'files/list_folder' => 'users/self/feed'
         ]
-    ]
+    ],
+
+    'page_size' => 5
 
 ];
 

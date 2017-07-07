@@ -11,29 +11,41 @@ class SyncController extends \TCG\Voyager\Http\Controllers\VoyagerBreadControlle
 {
 
     /**
-     * @var \App\InstagramApi $api
+     * @var \App\InstagramApi $sync
      */
-    private $api;
+    private $sync;
 
-    public function __construct(\App\InstagramApi $api)
+    public function __construct(\App\InstagramSync $sync)
     {
-        $this->api = $api;
+        $this->sync = $sync;
+    }
+
+    public function oauth(Request $request)
+    {
+        // If you want to get the value after the hash mark or anchor as shown in a user's browser: 
+        // This isn't possible with "standard" HTTP as this value is never sent to the server
+        //
+        // @see https://stackoverflow.com/questions/2317508/get-fragment-value-after-hash-from-a-url-in-php
+
+        #$accessToken = $request->cookie('instagram_access_token');
+        // $accessToken = $_COOKIE['instagram_access_token'];
+        // zf_dump($accessToken);
+
+        return view('instagram.oauth');
     }
 
     public function index(Request $request)
     {
         // @todo if no access_token from IG go to oauth otherwise render sync process
 
-        $api = $this->api;
+        $sync = $this->sync;
+        $sync->init();
 
-        $accessToken = @$_COOKIE[\App\InstagramApi::COOKIE_ACCESS_TOKEN_KEY] ?: '';
-        if (!$accessToken) {
-            return redirect($api->getAccessTokenUrl());
+        if (!$sync->hasAccessToken()) {
+            return redirect($sync->getAccessTokenUrl());
         }
 
-        $api->setAccessToken($accessToken);
-
-        $items = $api->getItems();
+        $syncData = $sync->getSyncData();
 
         // GET THE SLUG, ex. 'posts', 'pages', etc.
         #$slug = $this->getSlug($request);
@@ -78,6 +90,13 @@ class SyncController extends \TCG\Voyager\Http\Controllers\VoyagerBreadControlle
         $isModelTranslatable = is_bread_translatable($model);
 
         $view = 'instagram.sync.index';
-        return view($view,  compact('dataType', 'dataTypeContent', 'isModelTranslatable', 'items'));
+        return view($view,  compact('dataType', 'dataTypeContent', 'isModelTranslatable', 'syncData'));
+    }
+
+    public function load(Request $request)
+    {
+        $url = urldecode($request->input('url'));
+        $data = $this->sync->getSyncData($url);
+        return response()->json($data);
     }
 }

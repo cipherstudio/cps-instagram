@@ -4,7 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class InstagramApi extends Model
+class InstagramSync extends Model
 {
     const SESSION_ACCESS_TOKEN_KEY = 'instagram_access_token';
     const COOKIE_ACCESS_TOKEN_KEY = 'instagram_access_token';
@@ -19,15 +19,10 @@ class InstagramApi extends Model
      */
     protected $accessToken;
 
-    /*
-    public function construct(\Illuminate\Http\Request $request)
-    {
-        $session = $request->session();
-        // if ($accessToken = $session->get(self::SESSION_ACCESS_TOKEN_KEY)) {
-        //     $this->setAccessToken($accessToken);
-        // }
-    }
-    //*/
+    /**
+     * @var integer $itemCountPerPage
+     */
+    protected $itemCountPerPage = 10;
 
     public function getConfig()
     {
@@ -36,6 +31,17 @@ class InstagramApi extends Model
         }
 
         return $this->config;
+    }
+
+    public function init()
+    {
+        // @fixed
+        // @see   view set cookie
+        $accessToken = @$_COOKIE[\App\InstagramSync::COOKIE_ACCESS_TOKEN_KEY] ?: '';
+        $this->setAccessToken($accessToken);
+
+        $config = $this->getConfig();
+        $this->setItemCountPerPage($config['page_size']);
     }
 
     public function hasAccessToken()
@@ -75,6 +81,20 @@ class InstagramApi extends Model
     {
         $config = $this->getConfig();
         return $this->getApiUrl() . '/' . $config['api']['endpoints'][$name];
+    }
+
+
+    public function setItemCountPerPage($itemCountPerPage)
+    {
+        // @fixed if nlt 20 it doesn't return pagination data
+        //        may be sandbox mode
+        $this->itemCountPerPage = $itemCountPerPage;
+        return $this;
+    }
+
+    public function getItemCountPerPage()
+    {
+        return $this->itemCountPerPage;
     }
 
     public function request($url)
@@ -123,30 +143,24 @@ class InstagramApi extends Model
         return $data;
     }
 
-    public function getItems()
+    public function getSyncData($url = '')
     {
-        $url = $this->getEndpointUrl('get_current_account') . '?' . http_build_query(array('access_token' => $this->getAccessToken()));
+        if (!$url) {
+            $accountUrl = $this->getEndpointUrl('get_current_account') . '?' . http_build_query(array('access_token' => $this->getAccessToken()));
+            $data = $this->request($accountUrl);
 
+            $userId = $data['data']['id'];
+
+            $queryString = http_build_query(array(
+                'access_token' => $this->getAccessToken(), 
+                'count' => $this->getItemCountPerPage()
+            ));
+            $url = $this->getApiUrl() . '/users/' . $userId . '/media/recent' . '?' . $queryString;
+        }
+        
         $data = $this->request($url);
-        // zf_dump($data, '$data');
 
-        $userId = $data['data']['id'];
-        $itemCountPerPage = 20;
-        $queryString = http_build_query(array(
-            'access_token' => $this->getAccessToken(), 
-            'count' => $itemCountPerPage
-        ));
-        $url = $this->getApiUrl() . '/users/' . $userId . '/media/recent' . '?' . $queryString;
-
-        // var queryString = $.param({access_token: params.access_token, count: itemCountPerPage}),
-        // url = self._url('users/' + userId + '/media/recent') + '?' + queryString;
-
-        // zf_dump($url, '$url');
-        $data = $this->request($url);
-        // zf_dump($data, '$data');
-
-
-        return $data['data'];
+        return $data;
     }
 
 }
