@@ -46,7 +46,7 @@
         },
 
         mounted: function() {
-            console.log('mounted()');
+            // console.log('mounted()');
             // console.log( $('body') , 'body');
             // console.log ( $('#instagram .content')[0], 'target');
             // console.log( $('body').data('instagramSyncData') , 'instagramSyncData');
@@ -81,15 +81,15 @@
 
             load: function() {
                 var self = this;
-                console.log('loading');
-                console.log(self.syncData, 'syncData');
+                // console.log('loading');
+                // console.log(self.syncData, 'syncData');
 
                 var url = this.syncData.pagination.next_url,
                     data = {url: encodeURIComponent(url)};
 
                 // CURL proxy
                 $.getJSON(this.syncUrl, data, function(syncData) {
-                    console.log(syncData, 'syncData');
+                    // console.log(syncData, 'syncData');
 
                     // @todo check meta code
 
