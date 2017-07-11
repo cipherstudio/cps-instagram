@@ -9960,7 +9960,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     },
 
     mounted: function mounted() {
-        console.log('mounted()');
+        // console.log('mounted()');
         // console.log( $('body') , 'body');
         // console.log ( $('#instagram .content')[0], 'target');
         // console.log( $('body').data('instagramSyncData') , 'instagramSyncData');
@@ -9994,15 +9994,15 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
         load: function load() {
             var self = this;
-            console.log('loading');
-            console.log(self.syncData, 'syncData');
+            // console.log('loading');
+            // console.log(self.syncData, 'syncData');
 
             var url = this.syncData.pagination.next_url,
                 data = { url: encodeURIComponent(url) };
 
             // CURL proxy
             $.getJSON(this.syncUrl, data, function (syncData) {
-                console.log(syncData, 'syncData');
+                // console.log(syncData, 'syncData');
 
                 // @todo check meta code
 
@@ -10039,9 +10039,120 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         },
 
         setupSelectable: function setupSelectable() {
-            $(this.$el).selectable({
-                filter: '.photo-card'
+
+            var SELECTABLE_MODE_CLICK_NORMAL = 1;
+            var SELECTABLE_MODE_CLICK_ONLY = 2;
+            var SELECTABLE_MODE_CLICK_ONE = 3;
+            var SELECTABLE_MODE_CLICK_ADVANCED = 4;
+
+            var mode = SELECTABLE_MODE_CLICK_ADVANCED;
+
+            var container = $(this.$el);
+            var options = {
+                filter: '.photo-card:not(.x-state-exists,.x-state-error)',
+                cancel: 'input,textarea,button,select,option'
+            };
+            var events = {};
+
+            console.log(mode, 'mode');
+
+            // here we will store index of previous selection
+            var prev = -1;
+
+            var fnClickOnly = function fnClickOnly() {
+                var selectee = function selectee(event) {
+                    var el = $(event.originalEvent.toElement);
+                    if (!el.hasClass('ui-selectee')) {
+                        el = el.parents('.ui-selectee:first');
+                    };
+                    return el;
+                };
+
+                events.selectablestart = function (event) {
+                    // for select
+                    event.originalEvent.ctrlKey = true;
+
+                    // for unselect
+                    var el = selectee(event);
+                    if (el.length) {
+                        if (el.hasClass('ui-selected')) {
+                            container.one('selectablestop', function () {
+                                var self = container.data('ui-selectable');
+                                el.removeClass('ui-selected');
+                                self._trigger("unselected", event, {
+                                    unselected: el
+                                });
+                            });
+                        };
+                    }
+                };
+            };
+
+            // features: click and keyboard enabled both ctrl and shift buttons
+            // @see http://stackoverflow.com/questions/9374743/enable-shift-multiselect-in-jquery-ui-selectable
+            // @see http://jsfiddle.net/mac2000/DJFaL/1/light/
+            var fnClickNormal = function fnClickNormal() {
+                options.selecting = function (e, ui) {
+                    var curr = $(ui.selecting.tagName, e.target).index(ui.selecting);
+                    if (e.shiftKey && prev > -1) {
+                        var self = $(this).data('ui-selectable');
+                        var $elements = $(ui.selecting.tagName, e.target).slice(Math.min(prev, curr), 1 + Math.max(prev, curr)).filter(self.options.filter);
+
+                        $elements.addClass('ui-selected');
+                        $elements.each(function (key, element) {
+                            self._trigger("selected", e, {
+                                selected: element
+                            });
+                        });
+
+                        prev = -1;
+                    } else {
+                        prev = curr;
+                    }
+                };
+            };
+
+            // @see naram/gallery
+            switch (mode) {
+                case SELECTABLE_MODE_CLICK_ADVANCED:
+                    fnClickOnly();
+                    fnClickNormal();
+                    break;
+
+                /**
+                 * toggle click for selected state
+                 */
+                case SELECTABLE_MODE_CLICK_ONLY:
+                    fnClickOnly();
+                    break;
+
+                /**
+                 * features:
+                 *   - click (select, reset)
+                 *   - ctrl + click
+                 *   - shift + click
+                 *   - crop (mouse drag area and drop over items)
+                 */
+                case SELECTABLE_MODE_CLICK_NORMAL:
+                    fnClickNormal();
+                    break;
+
+                case SELECTABLE_MODE_CLICK_ONE:
+                    options.selecting = function (e, ui) {
+                        if ($(".ui-selected, .ui-selecting").length > 1) {
+                            $(ui.selecting).removeClass("ui-selecting");
+                        };
+                    };
+                    break;
+
+            };
+
+            // apply optional events
+            $.each(events, function (eventName, eventFn) {
+                container.on(eventName, eventFn);
             });
+
+            container.selectable(options);
         }
     }
 });
@@ -10052,7 +10163,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('div', [_c('div', {
+  return _c('div', {}, [_c('div', {
     attrs: {
       "infinite-scroll": "",
       "infinite-scroll-immediate-check": "false",

@@ -141,6 +141,8 @@ hr {
 
 .photo-card {
     padding-bottom: 12px;
+    
+    position: relative;
 }
 
 .photo-card-box {
@@ -154,6 +156,10 @@ hr {
 
 .photo-card-box a {
     display: block;
+    &:after {
+      position: absolute;
+      content:" ";
+    }
 }
 
 .squared-photo-div, .squared-photo-details-image-div {
@@ -167,6 +173,17 @@ hr {
 
 .squared-photo-div {
     background-color: #fff;
+}
+
+.photo-card.ui-selected a {
+    &:after {
+      top:8px;
+      left:0;
+      bottom:0;
+      right:8px;
+      background: url("../images/instagram/checked.png") no-repeat right top transparent;
+      background-size: 32px 32px;
+    }
 }
 
 @media only screen and (min-width: 1224px) and (orientation: landscape) {

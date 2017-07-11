@@ -9,10 +9,23 @@
 @stop
 
 @section('content')
+<div class="page-content container-fluid">
+    <div class="panel panel-bordered">
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-sm-6">
 
-    <instagram></instagram>
-    
-
+                </div>
+                <div class="col-sm-6">
+                    <div class="pull-right">
+                    <a href="#" class="instagram-media-select-all">Select All</a> / <a href="#"  class="instagram-media-deselect-all">Deselect All</a>
+                    </div>
+                </div>
+            </div>
+            <instagram></instagram>
+        </div>
+    </div>
+</div>
 @stop
 
 @section('css')
