@@ -46,11 +46,6 @@
         },
 
         mounted: function() {
-            // console.log('mounted()');
-            // console.log( $('body') , 'body');
-            // console.log ( $('#instagram .content')[0], 'target');
-            // console.log( $('body').data('instagramSyncData') , 'instagramSyncData');
-
             try {
                 var app = $('body');
                 this.init(app.data('syncUrl'), app.data('syncData'));
@@ -103,6 +98,10 @@
                     }
 
                     self.loading = false;
+
+                    if (self.selectable) {
+                        
+                    }
                 });
             },
 
@@ -126,7 +125,6 @@
             },
 
             setupSelectable: function() {
-                
                 var SELECTABLE_MODE_CLICK_NORMAL = 1;
                 var SELECTABLE_MODE_CLICK_ONLY = 2;
                 var SELECTABLE_MODE_CLICK_ONE = 3;
@@ -140,8 +138,6 @@
                     cancel: 'input,textarea,button,select,option'
                 };
                 var events = {};
-
-                console.log(mode, 'mode');
 
                 // here we will store index of previous selection
                 var prev = -1; 
@@ -244,6 +240,14 @@
                 });
 
                 container.selectable(options);
+            },
+
+            selecetAll: function() {
+                console.log('selecetAll()');
+            },
+            
+            deselectAll: function() {
+                console.log('deselecetAll()');
             }
         }
     }

@@ -18,11 +18,12 @@
                 </div>
                 <div class="col-sm-6">
                     <div class="pull-right">
-                    <a href="#" class="instagram-media-select-all">Select All</a> / <a href="#"  class="instagram-media-deselect-all">Deselect All</a>
+                    <a href="javascript:void(0);" class="instagram-media-select-all">Select All</a> / 
+                    <a href="javascript:void(0);"  class="instagram-media-deselect-all">Deselect All</a>
                     </div>
                 </div>
             </div>
-            <instagram></instagram>
+            <instagram ref="instagram"></instagram>
         </div>
     </div>
 </div>
@@ -39,4 +40,39 @@
         .data('syncData', {!! json_encode($syncData) !!});
 </script>
 <script type="text/javascript" src="{{ URL::asset('js/instagram.js') }}"></script>
+<script type="text/javascript">
+
+    var selectableClick = function(instance, el) {
+        var defaultEvent = {
+            target: el,
+            currentTarget: el,
+            delegateTarget: el,
+            ctrlKey: true
+        };
+        
+        var event = $.extend({}, $.Event('mousedown.selectable'), defaultEvent);
+        
+        var ret = instance._mouseStart.call(instance, event);
+        event.type = 'mouseup.selectable';
+        var ret = instance._mouseStop.call(instance, event);
+    };
+
+    var selectableAllClick = function(previewsContainerSelector, filter) {
+        var container = $(previewsContainerSelector),
+            instance = container.data('ui-selectable');
+
+        container.selectable('refresh');
+
+        container.find('.ui-selectee' + filter).each(function() {
+            selectableClick(instance, this);
+        }); 
+    };
+
+    $('.instagram-media-select-all').click(function(e) {
+        selectableAllClick('.ui-selectable', ':not(.ui-selected)');
+    });
+    $('.instagram-media-deselect-all').click(function(e) {
+        selectableAllClick('.ui-selectable', '.ui-selected');
+    });
+</script>
 @stop

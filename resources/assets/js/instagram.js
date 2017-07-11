@@ -1,7 +1,13 @@
 window.Vue = require('vue');
 
-Vue.component('instagram', require('./components/Instagram.vue'));
+const instagram = Vue.component('instagram', require('./components/Instagram.vue'));
 
-const app = new Vue({
+const vm = new Vue({
     el: '.app-container'
 });
+
+// console.log(instagram, 'instagram');
+// console.log(app, 'app');
+
+
+window.vm = vm;

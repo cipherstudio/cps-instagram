@@ -9864,11 +9864,17 @@ module.exports = __webpack_require__(42);
 
 window.Vue = __webpack_require__(3);
 
-Vue.component('instagram', __webpack_require__(43));
+var instagram = Vue.component('instagram', __webpack_require__(43));
 
-var app = new Vue({
+var vm = new Vue({
     el: '.app-container'
 });
+
+// console.log(instagram, 'instagram');
+// console.log(app, 'app');
+
+
+window.vm = vm;
 
 /***/ }),
 
@@ -9960,11 +9966,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     },
 
     mounted: function mounted() {
-        // console.log('mounted()');
-        // console.log( $('body') , 'body');
-        // console.log ( $('#instagram .content')[0], 'target');
-        // console.log( $('body').data('instagramSyncData') , 'instagramSyncData');
-
         try {
             var app = $('body');
             this.init(app.data('syncUrl'), app.data('syncData'));
@@ -10016,6 +10017,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 }
 
                 self.loading = false;
+
+                if (self.selectable) {}
             });
         },
 
@@ -10039,7 +10042,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         },
 
         setupSelectable: function setupSelectable() {
-
             var SELECTABLE_MODE_CLICK_NORMAL = 1;
             var SELECTABLE_MODE_CLICK_ONLY = 2;
             var SELECTABLE_MODE_CLICK_ONE = 3;
@@ -10053,8 +10055,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 cancel: 'input,textarea,button,select,option'
             };
             var events = {};
-
-            console.log(mode, 'mode');
 
             // here we will store index of previous selection
             var prev = -1;
@@ -10153,6 +10153,14 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             });
 
             container.selectable(options);
+        },
+
+        selecetAll: function selecetAll() {
+            console.log('selecetAll()');
+        },
+
+        deselectAll: function deselectAll() {
+            console.log('deselecetAll()');
         }
     }
 });
