@@ -130,4 +130,5 @@ class SyncController extends \TCG\Voyager\Http\Controllers\VoyagerBreadControlle
 
         return response()->json($media);
     }
+   
 }

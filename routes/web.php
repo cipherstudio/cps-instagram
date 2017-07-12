@@ -55,6 +55,10 @@ Route::group(['prefix' => 'admin'], function () {
         Route::get('instagram-media-sync/load', ['uses' => 'Instagram\SyncController@load', 'as' => 'instagram.sync.load']);
         Route::post('instagram-media-sync/import', ['uses' => 'Instagram\SyncController@import', 'as' => 'instagram.sync.import']);
 
+        Route::get('instagram-point/points/{id}', ['uses' => 'Instagram\PointController@points', 'as' => 'instagram.point.points']);
+
+
+
     });
 
     

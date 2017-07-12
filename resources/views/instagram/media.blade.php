@@ -108,6 +108,10 @@
                                             </a>
                                         @endif
                                         @if (Voyager::can('edit_'.$dataType->name))
+                                            <a href="{{ route('instagram.point.points', $data->id) }}" title="Edit" class="btn btn-sm btn-success pull-right edit">
+                                                <i class="voyager-edit"></i> <span class="hidden-xs hidden-sm">Pointing</span>
+                                            </a>
+
                                             <a href="{{ route('voyager.'.$dataType->slug.'.edit', $data->id) }}" title="Edit" class="btn btn-sm btn-primary pull-right edit">
                                                 <i class="voyager-edit"></i> <span class="hidden-xs hidden-sm">Edit</span>
                                             </a>
