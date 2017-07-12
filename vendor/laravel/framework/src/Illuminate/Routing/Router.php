@@ -249,7 +249,6 @@ class Router implements RegistrarContract, BindingRegistrar
         } else {
             $registrar = new ResourceRegistrar($this);
         }
-
         $registrar->register($name, $controller, $options);
     }
 

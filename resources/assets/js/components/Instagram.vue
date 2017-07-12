@@ -243,11 +243,11 @@
             },
 
             selecetAll: function() {
-                console.log('selecetAll()');
+                // console.log('selecetAll()');
             },
             
             deselectAll: function() {
-                console.log('deselecetAll()');
+                // console.log('deselecetAll()');
             }
         }
     }

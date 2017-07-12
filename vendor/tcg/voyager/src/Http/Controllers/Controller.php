@@ -46,6 +46,7 @@ abstract class Controller extends BaseController
         foreach ($rows as $row) {
             $options = json_decode($row->details);
 
+            
             $content = $this->getContentBasedOnType($request, $slug, $row);
 
             /*
@@ -69,6 +70,8 @@ abstract class Controller extends BaseController
                     $content = $data->{$row->field};
                 }
             }
+
+            
 
             if ($row->type == 'select_multiple' && property_exists($options, 'relationship')) {
                 // Only if select_multiple is working with a relationship
@@ -123,6 +126,7 @@ abstract class Controller extends BaseController
     public function getContentBasedOnType(Request $request, $slug, $row)
     {
         $content = null;
+
         switch ($row->type) {
             /********** PASSWORD TYPE **********/
             case 'password':

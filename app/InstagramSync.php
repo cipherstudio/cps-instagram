@@ -4,6 +4,11 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use TCG\Voyager\Facades\Voyager;
+use TCG\Voyager\Http\Controllers\Traits\BreadRelationshipParser;
+
 class InstagramSync extends Model
 {
     const SESSION_ACCESS_TOKEN_KEY = 'instagram_access_token';
@@ -163,4 +168,65 @@ class InstagramSync extends Model
         return $data;
     }
 
+    protected function createUploadedFile($url)
+    {
+        $tempDir = sys_get_temp_dir();
+
+        $tempFile = tempnam($tempDir, '');
+        file_put_contents($tempFile, file_get_contents($url));
+        $contents = file_get_contents($tempFile);
+
+        $path = $tempFile;
+        $originalName = basename($url);
+        $mimeType = 'application/octet-stream';
+        $size = strlen($contents);
+        $error = ($size > 0);
+        $file = new \Symfony\Component\HttpFoundation\File\UploadedFile($path, $originalName, $mimeType, $size, $error);
+
+        // @see Illuminate\Http\Concerns\InteractsWithInput.php
+        return \Illuminate\Http\UploadedFile::createFromBase($file);
+    }
+
+    public function createInput(Request $request, array $item, $data)
+    {
+        // simulate post input
+        $now = date('F jS, Y h:i A');
+        $uploadedFileMap = array('thumbnail_url' => 'url', 'url' => 'hd_url');
+
+        $input = array(
+            'name' => '',
+            'type' => 'image',
+            'width' => '640',
+            'height' => '640',
+            'thumbnail_width' => '320',
+            'thumbnail_height' => '320',
+            'data' => null,
+            'enabled' => 'on',
+            'created_at' => $now,
+            'updated_at' => $now
+        );
+
+        foreach ($uploadedFileMap as $targetKey => $sourceKey) {
+            if (isset($item[$sourceKey]) && !empty($item[$sourceKey])) {
+                $input[$targetKey] = $this->createUploadedFile($item[$sourceKey]);
+            }
+        }
+
+        $input['name'] = $input[$targetKey]->getClientOriginalName();
+
+        // @fixed timestamp field
+        foreach ( array('created_at', 'updated_at', 'deleted_at') as $key) {
+            if (isset($input[$key]) && !empty($input[$key])) {
+                $data->$key = strtotime($input[$key]);
+                unset($input[$key]);
+            }
+        }
+
+        $request->replace($input);
+        $request->files->replace(array('url' => $input['url'], 'thumbnail_url' => $input['thumbnail_url']));
+
+        return $data;
+    }
+
+    
 }

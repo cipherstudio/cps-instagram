@@ -99,4 +99,35 @@ class SyncController extends \TCG\Voyager\Http\Controllers\VoyagerBreadControlle
         $data = $this->sync->getSyncData($url);
         return response()->json($data);
     }
+
+    public function import(Request $request)
+    {
+        $items = $request->input('items');
+
+        // @see TCG\Voyager\Http\Controllers\VoyagerBreadController::store()
+
+        $slug = 'instagram-media';
+        $dataType = Voyager::model('DataType')->where('slug', '=', $slug)->first();
+
+        // Check permission
+        Voyager::canOrFail('add_'.$dataType->name);
+
+        //Validate fields with ajax
+        $val = $this->validateBread($request->all(), $dataType->addRows);
+
+        if ($val->fails()) {
+            return response()->json(['errors' => $val->messages()]);
+        }
+
+        $media = array();
+        foreach ($items as $item) {
+            $newRequest = clone($request);
+
+            $data = $this->sync->createInput($newRequest, $item, new $dataType->model_name());
+            $data = $this->insertUpdateData($newRequest, $slug, $dataType->addRows, $data);
+            $media[] = $data->toArray();
+        }
+
+        return response()->json($media);
+    }
 }

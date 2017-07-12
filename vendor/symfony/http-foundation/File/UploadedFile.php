@@ -87,6 +87,10 @@ class UploadedFile extends File
      */
     public function __construct($path, $originalName, $mimeType = null, $size = null, $error = null, $test = false)
     {
+        // zf_dump(func_get_args());
+        // zf_backtrace();
+        // exit;
+
         $this->originalName = $this->getName($originalName);
         $this->mimeType = $mimeType ?: 'application/octet-stream';
         $this->size = $size;

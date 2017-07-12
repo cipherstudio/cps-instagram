@@ -10156,11 +10156,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         },
 
         selecetAll: function selecetAll() {
-            console.log('selecetAll()');
+            // console.log('selecetAll()');
         },
 
         deselectAll: function deselectAll() {
-            console.log('deselecetAll()');
+            // console.log('deselecetAll()');
         }
     }
 });

@@ -53,6 +53,7 @@ Route::group(['prefix' => 'admin'], function () {
         // @todo instagram-media/sync {closure}
         Route::get('instagram-media-sync', ['uses' => 'Instagram\SyncController@index', 'as' => 'instagram.sync.index']);
         Route::get('instagram-media-sync/load', ['uses' => 'Instagram\SyncController@load', 'as' => 'instagram.sync.load']);
+        Route::post('instagram-media-sync/import', ['uses' => 'Instagram\SyncController@import', 'as' => 'instagram.sync.import']);
 
     });
 

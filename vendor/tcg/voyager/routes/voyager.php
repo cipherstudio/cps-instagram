@@ -43,6 +43,7 @@ Route::group(['as' => 'voyager.'], function () {
         } catch (\Exception $e) {
             // do nothing, might just be because table not yet migrated.
         }
+        
 
         // Role Routes
         Route::resource('roles', $namespacePrefix.'VoyagerRoleController');

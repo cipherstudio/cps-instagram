@@ -227,7 +227,6 @@ trait InteractsWithInput
     public function allFiles()
     {
         $files = $this->files->all();
-
         return $this->convertedFiles
                     ? $this->convertedFiles
                     : $this->convertedFiles = $this->convertUploadedFiles($files);
