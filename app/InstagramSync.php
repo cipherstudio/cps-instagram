@@ -211,6 +211,7 @@ class InstagramSync extends Model
             }
         }
 
+        // last file from foreach()
         $input['name'] = $input[$targetKey]->getClientOriginalName();
 
         // @fixed timestamp field

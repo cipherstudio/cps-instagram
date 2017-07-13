@@ -43,9 +43,11 @@ abstract class Controller extends BaseController
                         ? $data->prepareTranslations($request)
                         : [];
 
+
         foreach ($rows as $row) {
             $options = json_decode($row->details);
 
+            // zf_dump($row, '$row');
             
             $content = $this->getContentBasedOnType($request, $slug, $row);
 
@@ -126,6 +128,9 @@ abstract class Controller extends BaseController
     public function getContentBasedOnType(Request $request, $slug, $row)
     {
         $content = null;
+
+        // zf_dump($row->type, '$row->type');
+        // zf_dump($row->field, '$row->field');
 
         switch ($row->type) {
             /********** PASSWORD TYPE **********/

@@ -50,13 +50,15 @@ Route::group(['prefix' => 'admin'], function () {
     $namespacePrefix = '\\'.config('voyager.controllers.namespace').'\\';
     Route::group(['middleware' => 'admin.user'], function () use ($namespacePrefix) {
 
+        // sync
         // @todo instagram-media/sync {closure}
         Route::get('instagram-media-sync', ['uses' => 'Instagram\SyncController@index', 'as' => 'instagram.sync.index']);
         Route::get('instagram-media-sync/load', ['uses' => 'Instagram\SyncController@load', 'as' => 'instagram.sync.load']);
         Route::post('instagram-media-sync/import', ['uses' => 'Instagram\SyncController@import', 'as' => 'instagram.sync.import']);
 
-        Route::get('instagram-point/points/{id}', ['uses' => 'Instagram\PointController@points', 'as' => 'instagram.point.points']);
-
+        // points
+        Route::get('instagram-media/points/{id}', ['uses' => 'Instagram\PointController@points', 'as' => 'instagram.point.points']);
+        Route::post('instagram-point/save-points', ['uses' => 'Instagram\PointController@savePoints', 'as' => 'instagram.point.save-points']);
 
 
     });

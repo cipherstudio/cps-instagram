@@ -10,6 +10,16 @@ use TCG\Voyager\Http\Controllers\Traits\BreadRelationshipParser;
 class PointController extends \TCG\Voyager\Http\Controllers\VoyagerBreadController
 {
 
+    /**
+     * @var \App\InstagramPoint $point
+     */
+    private $point;
+
+    public function __construct(\App\InstagramPoint $point)
+    {
+        $this->point = $point;
+    }
+
     public function points(Request $request, $id)
     {
         // GET THE SLUG, ex. 'posts', 'pages', etc.
@@ -36,7 +46,54 @@ class PointController extends \TCG\Voyager\Http\Controllers\VoyagerBreadControll
         // exit;
 
         $view = 'instagram.point.points';
-        return view($view, compact('dataType', 'dataTypeContent', 'isModelTranslatable'));
+        return view($view, compact('dataType', 'dataTypeContent', 'isModelTranslatable', 'id'));
+    }
+
+    public function savePoints(Request $request)
+    {
+        // zf_dump(__METHOD__);
+        // zf_dump($_FILES, '$_FILES');
+        // zf_dump($_POST, '$_POST');
+
+        // @see TCG\Voyager\Http\Controllers\VoyagerBreadController::store()
+
+        $slug = 'instagram-points';
+        $dataType = Voyager::model('DataType')->where('slug', '=', $slug)->first();
+
+        // Check permission
+        Voyager::canOrFail('add_'.$dataType->name);
+
+        //Validate fields with ajax
+        $val = $this->validateBread($request->all(), $dataType->addRows);
+
+        if ($val->fails()) {
+            return response()->json(['errors' => $val->messages()]);
+        }
+
+        $items = $request->input('items');
+
+        $points = array();
+        foreach ($items as $key => $item) {
+            #$newRequest = clone($request);
+            $newRequest = new Request();
+
+            if ($file = $request->file($key)) {
+                $item['imageUrl'] = $file;
+            }
+
+            $data = $this->point->createInput($newRequest, $item, new $dataType->model_name());
+            $data = $this->insertUpdateData($newRequest, $slug, $dataType->addRows, $data);
+            $points[] = $data->toArray();
+        }
+
+        zf_dump($points, '$points');
+        exit;
+
+        return response()->json($points);
+
+
+
+
     }
 
 }

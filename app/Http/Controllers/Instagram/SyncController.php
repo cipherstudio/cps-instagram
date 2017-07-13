@@ -11,7 +11,7 @@ class SyncController extends \TCG\Voyager\Http\Controllers\VoyagerBreadControlle
 {
 
     /**
-     * @var \App\InstagramApi $sync
+     * @var \App\InstagramSync $sync
      */
     private $sync;
 
