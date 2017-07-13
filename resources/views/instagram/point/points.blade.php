@@ -69,87 +69,6 @@
 <link rel="stylesheet" type="text/css" href="{{ URL::asset('css/instagram.css') }}">
 
 <style>
-    .photo-tags {
-        user-drag: none; 
-        -webkit-user-drag: none;
-    }
-    .photo-tags-wrapper {
-        z-index: 5;
-        position: relative;
-
-        user-select: none;
-        -moz-user-select: none;
-        -khtml-user-select: none;
-        -webkit-user-select: none;
-        -o-user-select: none;
-    }
-    .photo-tags-tag {
-        position: absolute;
-
-        text-align: center;
-        background-color: #fff;
-        width: 28px;
-        height: 28px;
-        border-radius: 100px;
-        padding-top: 2px;
-
-        -webkit-box-shadow: 0 0 5px 0 #3e3e3e;
-        -moz-box-shadow: 0 0 5px 0 #3e3e3e;
-        box-shadow: 0 0 5px 0 #3e3e3e;
-    }
-    .photo-tags-tag > span {
-        display: inline-block;
-        font-size:.8em;
-        font-weight: 700;
-        cursor: pointer;
-        color: #3e3e3e;
-    }
-    .photo-tags-preview {
-
-    }
-    .photo-tags-preview-item {
-        float: left;
-        padding: 0!important;
-        position:relative;
-
-        /*width:50%;*/
-        width: calc(50% - 30px);
-        margin-left: 15px;
-    }
-    .photo-tags-preview-item .photo-tags-tag {
-        position: absolute;
-        top: 28px;
-        left: 8px;
-    }
-    .photo-tags-preview-item .name {
-        font-weight: 700;
-        font-size: .85em;
-        width: 100%;
-        display: inline-block;
-        overflow: hidden;
-        clear: both;
-        float: left;
-        height: 30px;
-        line-height: 30px;
-        text-align:center;
-    }
-
-    .photo-tags-form-wrapper {
-        position: absolute;
-        background-color: #22a7f0;
-        color: white;
-        width: 200;
-        z-index: 10;
-        cursor: default;
-        padding: 10px;
-        font-size: .9em;
-    }
-    .photo-tags-form-wrapper form{
-
-    }
-    .photo-tags-form-wrapper a{
-        color: #fff;
-    }
 
 
 </style>
@@ -158,6 +77,7 @@
 @section('javascript')
 <script type="text/javascript">
     // console.log('points...');
+    var points = <?php echo json_encode($points);?>;
 
     // @todo jquery plugin
     (function ( $ ) {
@@ -169,6 +89,7 @@
                 // predefined
                 prefix: 'photo-tags',
                 disabled: false,
+                readonly: false,
                 previewContainer: '',
                 size: 30,
                 radius: '50%',
@@ -291,11 +212,13 @@
                         // check image
                         var filename = $image.val() || '';
                         if (filename.length) {
-                            name = getFileName(filename);
                             pos.$image = $image;
+                            if (!name.length) {
+                                name = getFileName(filename);
+                            };
                         } else {
                             pos.$image = self.$el.attr('src');
-                        }
+                        };
 
                         if (!name.length) {
                             name = url.split('/').pop();
@@ -307,9 +230,7 @@
                         self.hideForm();
 
                         self.createTag(pos);
-                        if (self.$previewContainer) {
-                            self.createPreview(pos);
-                        }
+                        
                     });
 
                     this.$form.find('[name="name"]').focus();
@@ -328,7 +249,7 @@
                         size = self.options.size,
                         gap = parseInt(size / 2);
 
-                    $tag = $('<div class="' + self.prefix + '-tag"><span>' + pos.number + '</span></div>')
+                    var $tag = $('<div class="' + self.prefix + '-tag"><span>' + pos.number + '</span></div>')
                         .data('pos', pos)
                         .css({
                             //position: 'absolute',
@@ -337,28 +258,120 @@
                         })
                         .appendTo(self.$wrapper);
 
+                    
+                    if (self.$previewContainer) {
+                        $tag.$preview = self.createPreview(pos);
+                    };
+
                     self.$tags.push($tag);
+                },
+
+                removeTag: function(pos) {
+                    var self = this;
+                    var $tags = [];
+                    $.each(self.$tags, function(key, $tag) {
+                        var number = $tag.data('pos').number;
+                        if (number == pos.number) {
+                            if ($.type($tag.$preview) !== 'undefined') {
+                                $tag.$preview.remove();
+                            };
+                            $tag.remove();
+                        } else {
+                            $tags.push($tag);
+                        };
+                    });
+
+                    this.$tags = $tags;
+
+                    this.update();
+                },
+
+                update: function() {
+                    var self = this;
+                    $.each(self.$tags, function(key, $tag) {
+                        var number = key + 1;
+
+                        var pos = $tag.data('pos');
+
+                        // update tag
+                        pos.number = number;
+                        $tag.data('pos', pos);
+                        $tag.find('> span').text(number);
+
+                        if ($.type($tag.$preview) !== 'undefined') {
+                            $tag.$preview.data('pos', pos);
+                            $tag.$preview.find('.' + self.prefix + '-tag > span').text(number);
+                        };
+                    });
+                },
+
+                confirmDelete: function(callback) {
+                    var self = this;
+
+                    if ($.type(self.$deleteModal) == 'undefined') {
+                        var tpl = [
+                            '<div class="modal modal-danger fade" tabindex="-1" id="delete_modal" role="dialog">',
+                                '<div class="modal-dialog">',
+                                    '<div class="modal-content">',
+                                        '<div class="modal-header">',
+                                            '<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span',
+                                                        ' aria-hidden="true">&times;</span></button>',
+                                            '<h4 class="modal-title"><i class="voyager-trash"></i> Are you sure you want to delete',
+                                                ' this point?</h4>',
+                                        '</div>',
+                                        '<div class="modal-footer">',
+                                            '<input type="submit" class="btn btn-danger pull-right delete-confirm"',
+                                                    'value="Yes, delete this point">',
+                                            '<button type="button" class="btn btn-default pull-right" data-dismiss="modal">Cancel</button>',
+                                        '</div>',
+                                    '</div><!-- /.modal-content -->',
+                                '</div><!-- /.modal-dialog -->',
+                            '</div><!-- /.modal -->'
+                        ].join('');
+
+                        self.$deleteModal = $(tpl).appendTo('body');
+                        self.$deleteModal.on("hidden.bs.modal", function () {
+                            $('.modal-backdrop').remove();
+                        });
+                    }
+
+                    $('[type="submit"]', self.$deleteModal)
+                        .unbind('click')
+                        .bind('click', function(e) {
+                            self.$deleteModal.modal('hide');
+                            callback();
+                        });
+
+                    self.$deleteModal.modal('show');
+                    return self.$deleteModal;
                 },
                 
                 createPreview: function(pos) {
-                    var $preview = $([
-                        '<div class="' + this.options.prefix + '-preview-item">',
+                    var self = this;
+                    var name = pos.name || ('Untitled (' + pos.number + ')');
+
+                    var deleteButtonTpl = this.readonly ? '' : '<span class="' + this.prefix + '-delete' + (self.readonly ? 'hidden' : '') + '"></span>';
+
+                    var tpl = [
+                        '<div class="' + this.prefix + '-preview-item">',
                             '<div class="squared-photo-div"></div>',
-                            '<a href="' + pos.url + '" class="name">' + pos.name + '</a>',
+                            '<a href="' + pos.url + '" class="' + this.prefix + '-name">' + name,
+                                deleteButtonTpl,
+                            '</a>',
                             '<div class="' + this.prefix + '-tag">',
                                 '<span>',
                                 pos.number,
                                 '</span>',
                             '</div>',
                         '</div>'
-                    ].join(''))
-                        .appendTo(this.$previewContainer);
+                    ].join('');
 
+                    var $preview = $(tpl).appendTo(this.$previewContainer);
 
                     // renderer
                     switch ($.type(pos.$image)) {
                         case 'string':
-                            $preview.find('.squared-photo-div').css('background-image', 'url("' + pos.$image + '")');
+                            pos.$image.length && $preview.find('.squared-photo-div').css('background-image', 'url("' + pos.$image + '")');
                             break;
 
                         case 'object':
@@ -372,15 +385,37 @@
                     };
 
                     $preview.data('pos', pos);
+
+                    // delelete button
+                    if (!self.readonly) {
+                        $preview.find('.' + this.prefix + '-name').click(function(e) {
+                            e.preventDefault();
+                        });
+                        $preview.find('.' + this.prefix + '-delete').click(function(e) {
+                            self.confirmDelete(function() {
+                                self.removeTag(pos);
+                            });
+                        });
+                    };
+
+                    return $preview;
                 }
             };
             
             photoTags.init();
             $el.data('photoTags', photoTags);
+
+            return this;
         };
     } (jQuery));
 
-    $('.photo-tags').photoTags();
+    
+
+    var photoTags = $('.photo-tags').photoTags().data('photoTags');
+    $.each(points, function(key, point) {
+        point.$image = point.imageUrl;
+        photoTags.createTag(point);
+    });
 
     $('.instagram-point-points').click(function(e) {
         e.preventDefault();

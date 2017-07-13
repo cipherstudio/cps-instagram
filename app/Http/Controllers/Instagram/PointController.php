@@ -15,6 +15,11 @@ class PointController extends \TCG\Voyager\Http\Controllers\VoyagerBreadControll
      */
     private $point;
 
+    /**
+     * @var \TCG\Voyager\Facades\Voyager
+     */
+    private $voyager;
+
     public function __construct(\App\InstagramPoint $point)
     {
         $this->point = $point;
@@ -41,20 +46,15 @@ class PointController extends \TCG\Voyager\Http\Controllers\VoyagerBreadControll
         // Check if BREAD is Translatable
         $isModelTranslatable = is_bread_translatable($dataTypeContent);
 
-        // zf_dump($dataTypeContent, '$dataTypeContent');
-        // zf_dump($dataTypeContent->toArray(), '$dataTypeContent->toArray()');
-        // exit;
 
+        // @todo find all points of media photo
+        $points = $dataTypeContent->getPoints($this->voyager);
         $view = 'instagram.point.points';
-        return view($view, compact('dataType', 'dataTypeContent', 'isModelTranslatable', 'id'));
-    }
+        return view($view, compact('dataType', 'dataTypeContent', 'isModelTranslatable', 'id', 'points'));
+    } 
 
     public function savePoints(Request $request)
     {
-        // zf_dump(__METHOD__);
-        // zf_dump($_FILES, '$_FILES');
-        // zf_dump($_POST, '$_POST');
-
         // @see TCG\Voyager\Http\Controllers\VoyagerBreadController::store()
 
         $slug = 'instagram-points';
@@ -86,14 +86,7 @@ class PointController extends \TCG\Voyager\Http\Controllers\VoyagerBreadControll
             $points[] = $data->toArray();
         }
 
-        zf_dump($points, '$points');
-        exit;
-
         return response()->json($points);
-
-
-
-
     }
 
 }

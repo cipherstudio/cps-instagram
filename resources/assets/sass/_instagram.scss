@@ -203,72 +203,97 @@ hr {
     }
 }
 
-/* spinner */
-.uil-spin-css {
-  background: none;
-  position: relative;
-  width: 200px;
-  height: 200px;
+/* tags */
+.photo-tags {
+    user-drag: none; 
+    -webkit-user-drag: none;
 }
-@-webkit-keyframes uil-spin-css {
-  0% {
-    opacity: 1;
-    -webkit-transform: scale(1.5);
-    transform: scale(1.5);
-  }
-  100% {
-    opacity: 0.1;
-    -webkit-transform: scale(1);
-    transform: scale(1);
-  }
+.photo-tags-wrapper {
+    z-index: 5;
+    position: relative;
+
+    user-select: none;
+    -moz-user-select: none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    -o-user-select: none;
 }
-@-moz-keyframes uil-spin-css {
-  0% {
-    opacity: 1;
-    -webkit-transform: scale(1.5);
-    transform: scale(1.5);
-  }
-  100% {
-    opacity: 0.1;
-    -webkit-transform: scale(1);
-    transform: scale(1);
-  }
+.photo-tags-tag{
+    position: absolute;
+
+    text-align: center;
+    background-color: #fff;
+    width: 28px;
+    height: 28px;
+    border-radius: 100px;
+    padding-top: 2px;
+
+    -webkit-box-shadow: 0 0 5px 0 #3e3e3e;
+    -moz-box-shadow: 0 0 5px 0 #3e3e3e;
+    box-shadow: 0 0 5px 0 #3e3e3e;
 }
-@-webkit-keyframes uil-spin-css {
-  0% {
-    opacity: 1;
-    -webkit-transform: scale(1.5);
-    transform: scale(1.5);
-  }
-  100% {
-    opacity: 0.1;
-    -webkit-transform: scale(1);
-    transform: scale(1);
-  }
+.photo-tags-tag > span{
+    display: inline-block;
+    font-size:.8em;
+    font-weight: 700;
+    cursor: pointer;
+    color: #3e3e3e;
 }
-@-o-keyframes uil-spin-css {
-  0% {
-    opacity: 1;
-    -webkit-transform: scale(1.5);
-    transform: scale(1.5);
-  }
-  100% {
-    opacity: 0.1;
-    -webkit-transform: scale(1);
-    transform: scale(1);
-  }
+.photo-tags-preview {
+
 }
-@keyframes uil-spin-css {
-  0% {
-    opacity: 1;
-    -webkit-transform: scale(1.5);
-    transform: scale(1.5);
-  }
-  100% {
-    opacity: 0.1;
-    -webkit-transform: scale(1);
-    transform: scale(1);
-  }
+.photo-tags-preview-item {
+    float: left;
+    padding: 0!important;
+    position:relative;
+
+    /*width:50%;*/
+    width: calc(50% - 30px);
+    margin-left: 15px;
+}
+.photo-tags-preview-item .photo-tags-tag {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+.photo-tags-preview-item .photo-tags-delete {
+    width: 16px;
+    height: 16px;
+    display: inline-block;
+    margin: 0 0 0 4px;
+    position: relative;
+    top: 2px;
+    background: url("../images/instagram/delete-32x32.png") no-repeat 0 0 transparent;
+    background-size: 16px 16px;
+    cursor: pointer;
+}
+.photo-tags-preview-item .photo-tags-name {
+    font-weight: 700;
+    font-size: .85em;
+    width: 100%;
+    display: inline-block;
+    overflow: hidden;
+    clear: both;
+    height: 30px;
+    line-height: 30px;
+    text-align:center;
+}
+
+.photo-tags-form-wrapper {
+    position: absolute;
+    background-color: #22a7f0;
+    color: white;
+    width: 200;
+    z-index: 10;
+    cursor: default;
+    padding: 10px;
+    font-size: .9em;
+}
+.photo-tags-form-wrapper form{
+
+}
+.photo-tags-form-wrapper a{
+    color: #fff;
 }
 
 @import "loading";

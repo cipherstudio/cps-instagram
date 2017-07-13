@@ -1,3 +1,70 @@
+/* spinner */
+.uil-spin-css {
+  background: none;
+  position: relative;
+  width: 200px;
+  height: 200px;
+}
+@-webkit-keyframes uil-spin-css {
+  0% {
+    opacity: 1;
+    -webkit-transform: scale(1.5);
+    transform: scale(1.5);
+  }
+  100% {
+    opacity: 0.1;
+    -webkit-transform: scale(1);
+    transform: scale(1);
+  }
+}
+@-moz-keyframes uil-spin-css {
+  0% {
+    opacity: 1;
+    -webkit-transform: scale(1.5);
+    transform: scale(1.5);
+  }
+  100% {
+    opacity: 0.1;
+    -webkit-transform: scale(1);
+    transform: scale(1);
+  }
+}
+@-webkit-keyframes uil-spin-css {
+  0% {
+    opacity: 1;
+    -webkit-transform: scale(1.5);
+    transform: scale(1.5);
+  }
+  100% {
+    opacity: 0.1;
+    -webkit-transform: scale(1);
+    transform: scale(1);
+  }
+}
+@-o-keyframes uil-spin-css {
+  0% {
+    opacity: 1;
+    -webkit-transform: scale(1.5);
+    transform: scale(1.5);
+  }
+  100% {
+    opacity: 0.1;
+    -webkit-transform: scale(1);
+    transform: scale(1);
+  }
+}
+@keyframes uil-spin-css {
+  0% {
+    opacity: 1;
+    -webkit-transform: scale(1.5);
+    transform: scale(1.5);
+  }
+  100% {
+    opacity: 0.1;
+    -webkit-transform: scale(1);
+    transform: scale(1);
+  }
+}
 .uil-spin-css > div {
   width: 24px;
   height: 24px;
