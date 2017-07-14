@@ -13,10 +13,11 @@ class InstagramPoint extends Model
 
     public function createInput(Request $request, array $item, $data)
     {
-        $now = date('F jS, Y h:i A');
+        $now = date('F jS, Y h:i:s A');
 
         $input = array(
-            'name' => '',
+            'id' => isset($item['id']) ? $item['id'] : '',
+            'name' => (string) $item['name'],
             'number' => $item['number'],
             'pos_x' => $item['posX'],
             'pos_y' => $item['posY'],
@@ -24,9 +25,20 @@ class InstagramPoint extends Model
             'url' => $item['url'],
             'media_id' => $item['mediaId'],
             'image_url' => isset($item['imageUrl']) ? $item['imageUrl'] : '',
-            'created_at' => $now,
-            'updated_at' => $now
+            'created_at' => isset($item['createdAt']) ? $item['createdAt'] : $now,
+            'updated_at' => isset($item['updatedAt']) ? $item['updatedAt'] : $now
         );
+
+        
+
+        // edit mode
+        if (is_string($input['image_url'])) {
+            unset($input['image_url']);
+        }
+        if ($input['id']) {
+            $data->id = $input['id'];
+            $input['updated_at'] = $now;
+        }
 
         // @fixed timestamp field
         foreach ( array('created_at', 'updated_at', 'deleted_at') as $key) {
@@ -36,7 +48,7 @@ class InstagramPoint extends Model
             }
         }
 
-        if ($input['image_url']) {
+        if (isset($input['image_url']) && !empty($input['image_url'])) {
             $request->files->replace(array('image_url' => $input['image_url']));
         }
         

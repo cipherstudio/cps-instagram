@@ -200,7 +200,8 @@ class InstagramSync extends Model
             'thumbnail_width' => '320',
             'thumbnail_height' => '320',
             'data' => null,
-            'enabled' => 'on',
+            'enabled' => 'off',
+            'count' => 0,
             'created_at' => $now,
             'updated_at' => $now
         );
@@ -220,6 +221,11 @@ class InstagramSync extends Model
                 $data->$key = strtotime($input[$key]);
                 unset($input[$key]);
             }
+        }
+
+        // @see yoyager BREAD checkbox 
+        if ($input['enabled'] == 'off') {
+            unset($input['enabled']);
         }
 
         $request->replace($input);

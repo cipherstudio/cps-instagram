@@ -53,6 +53,29 @@ class PointController extends \TCG\Voyager\Http\Controllers\VoyagerBreadControll
         return view($view, compact('dataType', 'dataTypeContent', 'isModelTranslatable', 'id', 'points'));
     } 
 
+    protected function cleanPoints($media, $newPoints)
+    {
+        $originalPoints = $media->getPoints();
+
+        $originalPointIds = array_map(function($originalPoint) {
+            return $originalPoint['id'];
+        }, $originalPoints);
+
+
+        $newPointIds = array_filter(array_map(function($newPoint) {
+            return (isset($newPoint['id']) && !empty($newPoint['id'])) ? $newPoint['id'] : '';
+        }, $newPoints));
+
+        $removedIds = array_diff($originalPointIds, $newPointIds);
+
+        foreach ($removedIds as $removedId) {
+            $point = app('App\InstagramPoint')->find($removedId);
+            if ($point) {
+                $point->delete();
+            }
+        }
+    }
+
     public function savePoints(Request $request)
     {
         // @see TCG\Voyager\Http\Controllers\VoyagerBreadController::store()
@@ -70,7 +93,11 @@ class PointController extends \TCG\Voyager\Http\Controllers\VoyagerBreadControll
             return response()->json(['errors' => $val->messages()]);
         }
 
-        $items = $request->input('items');
+        $mediaId = $request->input('mediaId');
+        $items = (array) $request->input('items');
+
+        $media = app('App\InstagramMedia')->find($mediaId);
+        $this->cleanPoints($media, $items);
 
         $points = array();
         foreach ($items as $key => $item) {
@@ -81,10 +108,21 @@ class PointController extends \TCG\Voyager\Http\Controllers\VoyagerBreadControll
                 $item['imageUrl'] = $file;
             }
 
-            $data = $this->point->createInput($newRequest, $item, new $dataType->model_name());
+            if (isset($item['id']) && !empty($item['id'])) {
+                $data = call_user_func([$dataType->model_name, 'findOrFail'], $item['id']);
+            } else {
+                $data = new $dataType->model_name();
+            }
+
+            $data = $this->point->createInput($newRequest, $item, $data);
             $data = $this->insertUpdateData($newRequest, $slug, $dataType->addRows, $data);
             $points[] = $data->toArray();
         }
+
+        // update points
+        $media->count = count($points);
+        $media->enabled = $media->count ? 1 : 0;
+        $media->save();
 
         return response()->json($points);
     }

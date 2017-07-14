@@ -146,7 +146,6 @@ abstract class Controller extends BaseController
             /********** CHECKBOX TYPE **********/
             case 'checkbox':
                 $checkBoxRow = $request->input($row->field);
-
                 if (isset($checkBoxRow)) {
                     return 1;
                 }

@@ -33,7 +33,7 @@
 
 
             <div class="row">
-                <div class="col-sm-8" style="background:#46be8a;padding:8px">
+                <div class="col-sm-8" style="background:#f3f7f9;padding:8px">
                     <img class="photo-tags" src="{{ Voyager::image($dataTypeContent->url) }}">
                 </div>
                 <div class="col-sm-4">
@@ -171,7 +171,7 @@
                                     '<label>Photo</label>',
                                     '<input type="file" name="photo" accept="image/*" />',
                                 '</div>',
-                                '<div class="form-group">',
+                                '<div class="form-group pull-right">',
                                     '<button type="submit" class="btn btn-primary">Submit</button>',
                                     ' or ',
                                     '<a href="" class="x-close">Close</a>',
@@ -216,8 +216,6 @@
                             if (!name.length) {
                                 name = getFileName(filename);
                             };
-                        } else {
-                            pos.$image = self.$el.attr('src');
                         };
 
                         if (!name.length) {
@@ -244,26 +242,32 @@
                 },
 
                 createTag: function(pos) {
+                    var $tag = $('<div class="' + this.prefix + '-tag"><span>' + pos.number + '</span></div>')
+                        .appendTo(this.$wrapper);
 
+                    this.updateTag(pos, $tag);
+
+                    if (this.$previewContainer) {
+                        $tag.$preview = this.createPreview(pos);
+                    };
+
+                    this.$tags.push($tag);
+                },
+
+                updateTag: function(pos, $tag) {
                     var self = this,
                         size = self.options.size,
                         gap = parseInt(size / 2);
 
-                    var $tag = $('<div class="' + self.prefix + '-tag"><span>' + pos.number + '</span></div>')
-                        .data('pos', pos)
+                    $tag
+                        .find('> span:first')
+                            .text(pos.number)
+                        .end()
                         .css({
-                            //position: 'absolute',
                             left: (pos.posX - gap),
                             top: (pos.posY - gap)
                         })
-                        .appendTo(self.$wrapper);
-
-                    
-                    if (self.$previewContainer) {
-                        $tag.$preview = self.createPreview(pos);
-                    };
-
-                    self.$tags.push($tag);
+                        .data('pos', pos);
                 },
 
                 removeTag: function(pos) {
@@ -295,12 +299,10 @@
 
                         // update tag
                         pos.number = number;
-                        $tag.data('pos', pos);
-                        $tag.find('> span').text(number);
+                        self.updateTag(pos, $tag);
 
                         if ($.type($tag.$preview) !== 'undefined') {
-                            $tag.$preview.data('pos', pos);
-                            $tag.$preview.find('.' + self.prefix + '-tag > span').text(number);
+                            self.updatePreview(pos, $tag.$preview);
                         };
                     });
                 },
@@ -345,33 +347,22 @@
                     self.$deleteModal.modal('show');
                     return self.$deleteModal;
                 },
-                
-                createPreview: function(pos) {
+
+                updatePreview: function(pos, $preview) {
                     var self = this;
                     var name = pos.name || ('Untitled (' + pos.number + ')');
 
-                    var deleteButtonTpl = this.readonly ? '' : '<span class="' + this.prefix + '-delete' + (self.readonly ? 'hidden' : '') + '"></span>';
-
-                    var tpl = [
-                        '<div class="' + this.prefix + '-preview-item">',
-                            '<div class="squared-photo-div"></div>',
-                            '<a href="' + pos.url + '" class="' + this.prefix + '-name">' + name,
-                                deleteButtonTpl,
-                            '</a>',
-                            '<div class="' + this.prefix + '-tag">',
-                                '<span>',
-                                pos.number,
-                                '</span>',
-                            '</div>',
-                        '</div>'
-                    ].join('');
-
-                    var $preview = $(tpl).appendTo(this.$previewContainer);
-
                     // renderer
                     switch ($.type(pos.$image)) {
+                        case 'undefined':
+                            pos.$image = '';
+
                         case 'string':
-                            pos.$image.length && $preview.find('.squared-photo-div').css('background-image', 'url("' + pos.$image + '")');
+                            if (!pos.$image.length) {
+                                pos.$image = self.$el.attr('src');
+                            };
+
+                            $preview.find('.squared-photo-div').css('background-image', 'url("' + pos.$image + '")');
                             break;
 
                         case 'object':
@@ -384,7 +375,39 @@
                             break;
                     };
 
+                    $preview.find('.' + this.prefix + '-tag > span:first').text(pos.number);
+                    $preview.find('.' + this.prefix + '-name > span:first').text(name);
+
                     $preview.data('pos', pos);
+                },
+                
+                createPreview: function(pos) {
+                    var self = this;
+
+                    // element
+                    
+                    var deleteButtonTpl = this.readonly ? '' : '<span class="' + this.prefix + '-delete' + (self.readonly ? 'hidden' : '') + '"></span>';
+
+                    var tpl = [
+                        '<div class="' + this.prefix + '-preview-item">',
+                            '<div class="squared-photo-div"></div>',
+                            '<a href="' + pos.url + '" class="' + this.prefix + '-name">',
+                                '<span>' + pos.name + '</span>',
+                                deleteButtonTpl,
+                            '</a>',
+                            '<div class="' + this.prefix + '-tag">',
+                                '<span>',
+                                pos.number,
+                                '</span>',
+                            '</div>',
+                        '</div>'
+                    ].join('');
+
+                    var $preview = $(tpl).appendTo(this.$previewContainer);
+
+                    self.updatePreview(pos, $preview);
+
+                    /* event handler */
 
                     // delelete button
                     if (!self.readonly) {
@@ -397,7 +420,7 @@
                             });
                         });
                     };
-
+                    
                     return $preview;
                 }
             };
@@ -409,7 +432,6 @@
         };
     } (jQuery));
 
-    
 
     var photoTags = $('.photo-tags').photoTags().data('photoTags');
     $.each(points, function(key, point) {
@@ -423,10 +445,9 @@
         var $items = $('.photo-tags-preview-item');
 
         if (!$items.length) {
-            console.log('$items is empty');
-            return;
+            // do not anythig
+            // edit can empty mode for clear all
         };
-
 
         var mediaId = $(this).siblings('[name="id"]').val();
         if (!mediaId.length) {
@@ -435,6 +456,8 @@
         }
 
         var data = new FormData();
+
+        data.append('mediaId', mediaId);
 
         $items.each(function(key, $preview) {
             var pos = $(this).data('pos');
@@ -470,7 +493,7 @@
             contentType: false, // Set content type to false as jQuery will tell the server its a query string request
             success: function(data, textStatus, jqXHR)
             {
-                console.log(data, 'data');
+                window.location.href = "{{ route('voyager.instagram-media.index') }}"
                 return;
 
 

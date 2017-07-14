@@ -241,16 +241,6 @@ class VoyagerBreadController extends Controller
             return response()->json(['errors' => $val->messages()]);
         }
 
-        // zf_dump($slug, '$slug');
-        // zf_dump($dataType->name, '$dataType->name');
-        // zf_dump($request->all(), '$request->all()');
-        // zf_dump($dataType->addRows, '$dataType->addRows'); // object
-        // zf_dump($val, '$val'); // validator
-        // zf_dump(new $dataType->model_name());
-        // zf_dump($request->ajax());
-        // exit;
-
-
         if (!$request->ajax()) {
             $data = $this->insertUpdateData($request, $slug, $dataType->addRows, new $dataType->model_name());
 

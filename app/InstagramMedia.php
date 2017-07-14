@@ -23,6 +23,7 @@ class InstagramMedia extends Model
             }
 
             $points[] = array(
+                'id' => $row['id'],
                 'name' => $row['name'],
                 'number' => $row['number'],
                 'posX' => $row['pos_x'],
