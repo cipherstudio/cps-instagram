@@ -164,6 +164,10 @@ class InstagramSync extends Model
         
         $data = $this->request($url);
 
+        // zf_dump($url, '$url');
+        // zf_dump($data, '$data');
+        // exit;
+
         return $data;
     }
 

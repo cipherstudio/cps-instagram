@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 41);
+/******/ 	return __webpack_require__(__webpack_require__.s = 42);
 /******/ })
 /************************************************************************/
 /******/ ({
@@ -93,7 +93,7 @@ module.exports = g;
 
 /***/ }),
 
-/***/ 3:
+/***/ 2:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -9794,6 +9794,67 @@ module.exports = Vue$3;
 /***/ }),
 
 /***/ 4:
+/***/ (function(module, exports, __webpack_require__) {
+
+window.Vue = __webpack_require__(2);
+
+var instagram = Vue.component('instagram', __webpack_require__(5));
+
+var vm = new Vue({
+    el: '.app-container',
+    components: {
+        instagram: instagram
+    }
+});
+
+window.vm = vm;
+
+/***/ }),
+
+/***/ 42:
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__(4);
+
+
+/***/ }),
+
+/***/ 5:
+/***/ (function(module, exports, __webpack_require__) {
+
+var Component = __webpack_require__(6)(
+  /* script */
+  __webpack_require__(7),
+  /* template */
+  __webpack_require__(8),
+  /* scopeId */
+  null,
+  /* cssModules */
+  null
+)
+Component.options.__file = "/var/www/html/webig/resources/assets/js/components/Instagram.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key !== "__esModule"})) {console.error("named exports are not supported in *.vue files.")}
+if (Component.options.functional) {console.error("[vue-loader] Instagram.vue: functional components are not supported with templates, they should use render functions.")}
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-27926188", Component.options)
+  } else {
+    hotAPI.reload("data-v-27926188", Component.options)
+  }
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+
+/***/ 6:
 /***/ (function(module, exports) {
 
 // this module is a runtime utility for cleaner component module output and will
@@ -9851,69 +9912,7 @@ module.exports = function normalizeComponent (
 
 /***/ }),
 
-/***/ 41:
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = __webpack_require__(42);
-
-
-/***/ }),
-
-/***/ 42:
-/***/ (function(module, exports, __webpack_require__) {
-
-window.Vue = __webpack_require__(3);
-
-var instagram = Vue.component('instagram', __webpack_require__(43));
-
-var vm = new Vue({
-    el: '.app-container'
-});
-
-// console.log(instagram, 'instagram');
-// console.log(app, 'app');
-
-
-window.vm = vm;
-
-/***/ }),
-
-/***/ 43:
-/***/ (function(module, exports, __webpack_require__) {
-
-var Component = __webpack_require__(4)(
-  /* script */
-  __webpack_require__(44),
-  /* template */
-  __webpack_require__(45),
-  /* scopeId */
-  null,
-  /* cssModules */
-  null
-)
-Component.options.__file = "/var/www/html/webig/resources/assets/js/components/Instagram.vue"
-if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key !== "__esModule"})) {console.error("named exports are not supported in *.vue files.")}
-if (Component.options.functional) {console.error("[vue-loader] Instagram.vue: functional components are not supported with templates, they should use render functions.")}
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-27926188", Component.options)
-  } else {
-    hotAPI.reload("data-v-27926188", Component.options)
-  }
-})()}
-
-module.exports = Component.exports
-
-
-/***/ }),
-
-/***/ 44:
+/***/ 7:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -9961,30 +9960,34 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             // data
             syncUrl: '',
             syncData: {},
-            items: []
+            items: [],
+
+            column: 4
         };
     },
 
-    mounted: function mounted() {
-        try {
-            var app = $('body');
-            this.init(app.data('syncUrl'), app.data('syncData'));
-        } catch (e) {
-            console.log(e, 'error');
-        };
+    computed: {
+        columnClass: function columnClass() {
+            return {
+                'col-xs-4': this.column == 3,
+                'col-xs-3': this.column == 4,
+                'col-xs-2': this.column == 6
+            };
+        }
     },
+
+    mounted: function mounted() {},
 
     methods: {
-        init: function init(syncUrl, syncData) {
-            this.syncUrl = syncUrl;
-            this.syncData = syncData;
-            this.items = syncData.data;
+        init: function init(options) {
+            $.extend(this, options);
+            this.items = this.syncData.data;
 
             // pagination
             this.setupInfiniteScroll();
 
             // selectable for select all | none
-            if (this.selectable) {
+            if (this.selectable && $.type($.fn.selectable) == 'function') {
                 this.setupSelectable();
             };
         },
@@ -10167,7 +10170,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 /***/ }),
 
-/***/ 45:
+/***/ 8:
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
@@ -10181,7 +10184,8 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     staticClass: "row small-gutter content"
   }, _vm._l((_vm.items), function(item) {
     return _c('div', {
-      staticClass: "photo-card col-xs-2",
+      staticClass: "photo-card",
+      class: _vm.columnClass,
       attrs: {
         "data-id": 'photo-' + item.id
       }

@@ -2,7 +2,7 @@
 <div class="">
     <div infinite-scroll="" infinite-scroll-immediate-check="false" infinite-scroll-distance="0.5">
         <div class="row small-gutter content">
-                <div class="photo-card col-xs-2" v-for="item in items" v-bind:data-id="'photo-' + item.id">
+                <div class="photo-card" v-bind:class="columnClass" v-for="item in items" v-bind:data-id="'photo-' + item.id">
                     <div class="photo-card-box">
                         <div class="photo-card-box-inner">
                             <div class="video-wrapper"></div>
@@ -41,31 +41,36 @@
                 // data
                 syncUrl: '',
                 syncData: {},
-                items: []
+                items: [],
+
+                column: 4
             };
         },
 
+        computed: {
+            columnClass: function () {
+                return {
+                    'col-xs-4': (this.column == 3),
+                    'col-xs-3': (this.column == 4),
+                    'col-xs-2': (this.column == 6)
+                }
+            }
+        },
+
         mounted: function() {
-            try {
-                var app = $('body');
-                this.init(app.data('syncUrl'), app.data('syncData'));
-            } catch (e) {
-                console.log(e, 'error');
-            };
 
         },
 
         methods: {
-            init: function(syncUrl, syncData) {
-                this.syncUrl = syncUrl;
-                this.syncData = syncData;
-                this.items = syncData.data;
+            init: function(options) {
+                $.extend(this, options);
+                this.items = this.syncData.data;
 
                 // pagination
                 this.setupInfiniteScroll();
 
                 // selectable for select all | none
-                if (this.selectable) {
+                if (this.selectable && ($.type($.fn.selectable) == 'function')) {
                     this.setupSelectable();
                 };
             },

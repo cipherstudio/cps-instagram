@@ -23,20 +23,21 @@ Route::get('/home', 'HomeController@index')->name('home');
 
 # BEGIN: CPS Instagram
 
-Route::get('/', function () {
-    return view('instagram.index.index');
-});
+Route::get('/', ['uses' => 'Instagram\IndexController@index', 'as' => 'instagram.index.index']);
+Route::get('/load', ['uses' => 'Instagram\IndexController@load', 'as' => 'instagram.index.load']);
+
 
 Auth::routes();
 
-Route::get('/home', 'HomeController@index')->name('home');
+// @todo disable route login, register, forgot password
+// Route::get('/home', 'HomeController@index')->name('home');
 
 
 
 // END: CPS Instagram
 
 
-// @todo disable route login, register, forgot password
+
 
 
 // api
@@ -59,6 +60,9 @@ Route::group(['prefix' => 'admin'], function () {
         // points
         Route::get('instagram-media/points/{id}', ['uses' => 'Instagram\PointController@points', 'as' => 'instagram.point.points']);
         Route::post('instagram-point/save-points', ['uses' => 'Instagram\PointController@savePoints', 'as' => 'instagram.point.save-points']);
+
+        // frontend
+
 
 
     });

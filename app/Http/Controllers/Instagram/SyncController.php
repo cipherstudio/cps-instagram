@@ -45,6 +45,7 @@ class SyncController extends \TCG\Voyager\Http\Controllers\VoyagerBreadControlle
             return redirect($sync->getAccessTokenUrl());
         }
 
+        $syncUrl = route('instagram.sync.load');
         $syncData = $sync->getSyncData();
 
         // GET THE SLUG, ex. 'posts', 'pages', etc.
@@ -90,7 +91,7 @@ class SyncController extends \TCG\Voyager\Http\Controllers\VoyagerBreadControlle
         $isModelTranslatable = is_bread_translatable($model);
 
         $view = 'instagram.sync.index';
-        return view($view,  compact('dataType', 'dataTypeContent', 'isModelTranslatable', 'syncData'));
+        return view($view,  compact('dataType', 'dataTypeContent', 'isModelTranslatable', 'syncUrl', 'syncData'));
     }
 
     public function load(Request $request)

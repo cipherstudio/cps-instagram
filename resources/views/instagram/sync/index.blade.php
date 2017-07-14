@@ -41,13 +41,16 @@
 @stop
 
 @section('javascript')
-<script type="text/javascript">
-    $('body')
-        .data('syncUrl', '{{ route('instagram.sync.load') }}')
-        .data('syncData', {!! json_encode($syncData) !!});
-</script>
 <script type="text/javascript" src="{{ URL::asset('js/instagram.js') }}"></script>
 <script type="text/javascript">
+
+    $(function() {
+        vm.$refs.instagram.init({
+            syncUrl: '{{ $syncUrl }}',
+            syncData: {!! json_encode($syncData) !!},
+            column: 6
+        });
+    });
 
     /* select all / deselect all */
 
