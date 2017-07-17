@@ -16,12 +16,15 @@
         <!-- CSS Libs -->
         <link rel="stylesheet" type="text/css" href="{{ URL::asset('css/app.css') }}">
 
+        <!-- Favicon -->
+        <link rel="shortcut icon" href="{{ voyager_asset('images/logo-icon.png') }}" type="image/x-icon">
+
         <!-- Styles -->
         <style>
            
         </style>
     </head>
-    <body>
+    <body class="home">
         <div id="cps" class="app-container fade in">
             @include('instagram.partials.index.navbar')
             <div class="main-container">

@@ -1,6 +1,14 @@
 <template>
 <div class="">
-    <div infinite-scroll="" infinite-scroll-immediate-check="false" infinite-scroll-distance="0.5">
+    <div>
+        <div class="row small-gutter subtitle" v-if="subtitle">
+            <div class="col-xs-12">
+                <div>
+                    <span>Click an image to shop</span>
+                </div>
+                <hr />
+            </div>
+        </div>
         <div class="row small-gutter content">
                 <div class="photo-card" v-bind:class="columnClass" v-for="item in items" v-bind:data-id="'photo-' + item.id">
                     <div class="photo-card-box">
@@ -9,7 +17,7 @@
                             <span>
                                 <span>
                                     <span>
-                                        <a :href="item.images.standard_resolution.url">
+                                        <a :href="photoLink(item)"> 
                                             <div class="squared-photo-div" :style="{ 'background-image': 'url(' + item.images.standard_resolution.url + ')' }">
                                             </div>
                                         </a>
@@ -34,6 +42,8 @@
             return {
                 // props
                 selectable: true,
+                subtitle: true,
+                popup: true,
 
                 // state
                 loading: false,
@@ -43,11 +53,14 @@
                 syncData: {},
                 items: [],
 
-                column: 4
+                column: 4,
+
+                $popup: null,
             };
         },
 
         computed: {
+
             columnClass: function () {
                 return {
                     'col-xs-4': (this.column == 3),
@@ -62,6 +75,23 @@
         },
 
         methods: {
+
+            photoLink: function(item) {
+                var url = '';
+                if ($.type(item.points) == 'undefined') {
+                    url = item.images.standard_resolution.url;
+                } else {
+                    var points = item.points || [];
+                    if (points.length == 1) {
+                        url = points[0].url
+                    } else {
+                        url = window.location.origin + '/items/' + item.id;
+                    };
+                }
+
+                return url;
+            },
+
             init: function(options) {
                 $.extend(this, options);
                 this.items = this.syncData.data;
@@ -72,6 +102,10 @@
                 // selectable for select all | none
                 if (this.selectable && ($.type($.fn.selectable) == 'function')) {
                     this.setupSelectable();
+                };
+
+                if (this.popup) {
+                    this.setupPopup();
                 };
             },
 
@@ -245,6 +279,195 @@
                 });
 
                 container.selectable(options);
+            },
+
+            getItem: function(id) {
+                var self = this,
+                    found = false,
+                    item = null;
+
+                $.each(this.items, function(key, data) {
+                    if (found) return;
+
+                    if (data.id == id) {
+                        item = data;
+                        found = true;
+                    }
+                });
+
+                return item;
+            },
+
+            getPopup: function() {
+                var self = this;
+                if ($.type(self.$popup) == 'undefined') {
+                    var tpl = [
+                        '<div class="multiproduct-modal modal fade" tabindex="-1" role="dialog">',
+                            '<div class="modal-dialog">',
+                                '<div class="modal-content">',
+                                    '<div class="modal-header">',
+                                        '<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span',
+                                                    ' aria-hidden="true">&times;</span></button>',
+                                        '<h3 class="modal-title">Items to Shop</h3>',
+                                    '</div>',
+                                    '<div class="modal-body">',
+
+                                        '<div class="multiproduct-view">',
+                                            '<div class="multiproduct-view-inner">',
+                                                '<div class="row no-inner-gutter container-row">',
+                                                    '<div class="multiproduct-photo-container col-xs-12 col-sm-7">',
+                                                        '<div class="squared-product-details-image-div">',
+                                                            '<div class="spatial-tag-container photo-tags-wrapper">',
+                                                            '</div>',
+                                                        '</div>',
+                                                    '</div>',
+                                                    '<div id="multiproduct-list" class="col-sm-5 hidden-xs multiproduct-product-list">',
+                                                        '<div class="multiproduct-products">',
+                                                        '</div>',
+                                                    '</div>',
+                                                '</div>',
+                                            '</div>',
+                                        '</div>',
+
+
+                                    '</div>',
+                                '</div><!-- /.modal-content -->',
+                            '</div><!-- /.modal-dialog -->',
+                        '</div><!-- /.modal -->'
+                    ].join('');
+
+                    self.$popup = $(tpl).appendTo('body');
+                    self.$popup.on("hidden.bs.modal", function () {
+                        $('.modal-backdrop').remove();
+                    });
+                };
+
+                return self.$popup;
+            },
+
+            showPopup: function($el) {
+                var self = this,
+                    id = $el.data('id').split('-').pop(),
+                    item = self.getItem(id);
+
+                if (item.points.length == 1) {
+                    window.location.href = $el.find('a').attr('href');
+                    return;
+                };
+                    
+                var $popup = self.getPopup(),
+                    $photoViewer = $('.multiproduct-photo-container', $popup),
+                    $tagWrapper = $('.squared-product-details-image-div', $popup),
+                    $tagContainer = $('.spatial-tag-container', $popup),
+                    $productList = $('.multiproduct-product-list', $popup),
+                    $productContainer = $('.multiproduct-products', $popup);
+
+                // reset 
+                $tagWrapper.css('background-image', '');
+                $productContainer.html('');
+                $tagContainer.html('');
+
+                $popup.one('shown.bs.modal', function () {
+
+                    // calc photo dimension
+                    var maxWidth = $photoViewer.outerWidth(),
+                        maxHeight = $productList.outerHeight();
+
+                    var url = item.images.standard_resolution.url;
+
+                    // @todo read width and height from server response
+                    var image = new Image();
+                    image.onload = function(evt) {
+                        var width = this.width;
+                        var height = this.height;
+
+                        if (width == height) {
+                            $tagContainer.width(maxWidth).height(maxWidth);
+                        } else if (width > height) {
+                            $tagContainer.width(maxWidth).height( (maxWidth * height / width).toFixed(2) );
+                        } else {
+                            $tagContainer.width( (maxHeight * width / height).toFixed(2) ).height(maxHeight);
+                        };
+
+                        $tagContainer.css({
+                            marginTop: ($tagContainer.height() / 2 * -1).toFixed(2) + 'px',
+                            marginLeft: ($tagContainer.width() / 2 * -1).toFixed(2) + 'px'
+                        });
+
+                        // set image
+                        $tagWrapper.css('background-image', 'url(' + url + ')');
+
+                        var applyOnClick = function($el, pos) {
+                            $el
+                                .css('cursor', 'pointer')
+                                .click(function(e) {
+                                    e.preventDefault;
+                                    window.location.href = pos.url;
+                            });
+                        };
+
+                        // @todo add tags
+                        $.each(item.points, function(key, pos) {
+                            // console.log(pos, 'pos');
+                            // console.log('width: ' + width + ', height: ' + height);
+                            // console.log('posX: ' + pos.posX + ', posY: ' + pos.posY);
+
+                            var $el = $([
+                                '<div class="photo-tags-tag">',
+                                    '<span>' + pos.number + '</span>',
+                                '</div>'
+                            ].join('')).appendTo($tagContainer);
+
+                            // console.log($el.outerWidth(), '$el.outerWidth()');
+                            // console.log($el.outerHeight(), '$el.outerHeight()');
+
+                            var gap = parseInt(Math.max($el.outerWidth(), $el.outerHeight()) / 2);
+                            $el.css({
+                                left: parseInt($tagContainer.width() * pos.posX / width) - gap,
+                                top: parseInt($tagContainer.height() * pos.posY / height) - gap,
+                            })
+
+                            applyOnClick($el, pos);
+                        });
+
+                        // set preview
+                        $.each(item.points, function(key, pos) {
+                            var $el = $([
+                                '<div class="photo-tags-preview-item">',
+                                    '<div class="squared-photo-div">',
+                                    '</div>',
+                                    '<a href="' + pos.url + '" class="photo-tags-name">',
+                                        '<span></span>',
+                                    '</a>',
+                                    '<div class="photo-tags-tag">',
+                                        '<span>' + pos.number + '<span>',
+                                    '</div>',
+                                '</div>'
+                            ].join('')).appendTo($productContainer);
+
+                            var imageUrl = pos.imageUrl || url;
+                            $el.find('.squared-photo-div').css('background-image', 'url(' + imageUrl + ')');
+
+                            var name = pos.name || ('Untitled (' + pos.number + ')');
+                            $el.find('.photo-tags-name > span:first').text(name);
+
+                            applyOnClick($el, pos);
+                        });
+
+                    };
+
+                    image.src = url; 
+                });
+
+                $popup.modal('show');
+            },
+
+            setupPopup: function() {
+                var self = this;
+                $(this.$el).on('click', '.photo-card', function(e) {
+                    e.preventDefault();
+                    self.showPopup($(this));
+                });
             },
 
             selecetAll: function() {

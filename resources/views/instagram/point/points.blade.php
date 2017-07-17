@@ -335,7 +335,7 @@
                         self.$deleteModal.on("hidden.bs.modal", function () {
                             $('.modal-backdrop').remove();
                         });
-                    }
+                    };
 
                     $('[type="submit"]', self.$deleteModal)
                         .unbind('click')

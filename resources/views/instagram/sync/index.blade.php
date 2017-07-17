@@ -48,7 +48,9 @@
         vm.$refs.instagram.init({
             syncUrl: '{{ $syncUrl }}',
             syncData: {!! json_encode($syncData) !!},
-            column: 6
+            column: 6,
+            subtitle: false,
+            popup: false
         });
     });
 

@@ -152,7 +152,6 @@ class InstagramSync extends Model
         if (!$url) {
             $accountUrl = $this->getEndpointUrl('get_current_account') . '?' . http_build_query(array('access_token' => $this->getAccessToken()));
             $data = $this->request($accountUrl);
-
             $userId = $data['data']['id'];
 
             $queryString = http_build_query(array(
@@ -163,10 +162,6 @@ class InstagramSync extends Model
         }
         
         $data = $this->request($url);
-
-        // zf_dump($url, '$url');
-        // zf_dump($data, '$data');
-        // exit;
 
         return $data;
     }

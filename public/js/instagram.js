@@ -9946,6 +9946,14 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
 
@@ -9953,6 +9961,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         return {
             // props
             selectable: true,
+            subtitle: true,
+            popup: true,
 
             // state
             loading: false,
@@ -9962,11 +9972,14 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             syncData: {},
             items: [],
 
-            column: 4
+            column: 4,
+
+            $popup: null
         };
     },
 
     computed: {
+
         columnClass: function columnClass() {
             return {
                 'col-xs-4': this.column == 3,
@@ -9979,6 +9992,23 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     mounted: function mounted() {},
 
     methods: {
+
+        photoLink: function photoLink(item) {
+            var url = '';
+            if ($.type(item.points) == 'undefined') {
+                url = item.images.standard_resolution.url;
+            } else {
+                var points = item.points || [];
+                if (points.length == 1) {
+                    url = points[0].url;
+                } else {
+                    url = window.location.origin + '/items/' + item.id;
+                };
+            }
+
+            return url;
+        },
+
         init: function init(options) {
             $.extend(this, options);
             this.items = this.syncData.data;
@@ -9989,6 +10019,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             // selectable for select all | none
             if (this.selectable && $.type($.fn.selectable) == 'function') {
                 this.setupSelectable();
+            };
+
+            if (this.popup) {
+                this.setupPopup();
             };
         },
 
@@ -10158,6 +10192,144 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             container.selectable(options);
         },
 
+        getItem: function getItem(id) {
+            var self = this,
+                found = false,
+                item = null;
+
+            $.each(this.items, function (key, data) {
+                if (found) return;
+
+                if (data.id == id) {
+                    item = data;
+                    found = true;
+                }
+            });
+
+            return item;
+        },
+
+        getPopup: function getPopup() {
+            var self = this;
+            if ($.type(self.$popup) == 'undefined') {
+                var tpl = ['<div class="multiproduct-modal modal fade" tabindex="-1" role="dialog">', '<div class="modal-dialog">', '<div class="modal-content">', '<div class="modal-header">', '<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span', ' aria-hidden="true">&times;</span></button>', '<h3 class="modal-title">Items to Shop</h3>', '</div>', '<div class="modal-body">', '<div class="multiproduct-view">', '<div class="multiproduct-view-inner">', '<div class="row no-inner-gutter container-row">', '<div class="multiproduct-photo-container col-xs-12 col-sm-7">', '<div class="squared-product-details-image-div">', '<div class="spatial-tag-container photo-tags-wrapper">', '</div>', '</div>', '</div>', '<div id="multiproduct-list" class="col-sm-5 hidden-xs multiproduct-product-list">', '<div class="multiproduct-products">', '</div>', '</div>', '</div>', '</div>', '</div>', '</div>', '</div><!-- /.modal-content -->', '</div><!-- /.modal-dialog -->', '</div><!-- /.modal -->'].join('');
+
+                self.$popup = $(tpl).appendTo('body');
+                self.$popup.on("hidden.bs.modal", function () {
+                    $('.modal-backdrop').remove();
+                });
+            };
+
+            return self.$popup;
+        },
+
+        showPopup: function showPopup($el) {
+            var self = this,
+                id = $el.data('id').split('-').pop(),
+                item = self.getItem(id);
+
+            if (item.points.length == 1) {
+                window.location.href = $el.find('a').attr('href');
+                return;
+            };
+
+            var $popup = self.getPopup(),
+                $photoViewer = $('.multiproduct-photo-container', $popup),
+                $tagWrapper = $('.squared-product-details-image-div', $popup),
+                $tagContainer = $('.spatial-tag-container', $popup),
+                $productList = $('.multiproduct-product-list', $popup),
+                $productContainer = $('.multiproduct-products', $popup);
+
+            // reset 
+            $tagWrapper.css('background-image', '');
+            $productContainer.html('');
+            $tagContainer.html('');
+
+            $popup.one('shown.bs.modal', function () {
+
+                // calc photo dimension
+                var maxWidth = $photoViewer.outerWidth(),
+                    maxHeight = $productList.outerHeight();
+
+                var url = item.images.standard_resolution.url;
+
+                // @todo read width and height from server response
+                var image = new Image();
+                image.onload = function (evt) {
+                    var width = this.width;
+                    var height = this.height;
+
+                    if (width == height) {
+                        $tagContainer.width(maxWidth).height(maxWidth);
+                    } else if (width > height) {
+                        $tagContainer.width(maxWidth).height((maxWidth * height / width).toFixed(2));
+                    } else {
+                        $tagContainer.width((maxHeight * width / height).toFixed(2)).height(maxHeight);
+                    };
+
+                    $tagContainer.css({
+                        marginTop: ($tagContainer.height() / 2 * -1).toFixed(2) + 'px',
+                        marginLeft: ($tagContainer.width() / 2 * -1).toFixed(2) + 'px'
+                    });
+
+                    // set image
+                    $tagWrapper.css('background-image', 'url(' + url + ')');
+
+                    var applyOnClick = function applyOnClick($el, pos) {
+                        $el.css('cursor', 'pointer').click(function (e) {
+                            e.preventDefault;
+                            window.location.href = pos.url;
+                        });
+                    };
+
+                    // @todo add tags
+                    $.each(item.points, function (key, pos) {
+                        // console.log(pos, 'pos');
+                        // console.log('width: ' + width + ', height: ' + height);
+                        // console.log('posX: ' + pos.posX + ', posY: ' + pos.posY);
+
+                        var $el = $(['<div class="photo-tags-tag">', '<span>' + pos.number + '</span>', '</div>'].join('')).appendTo($tagContainer);
+
+                        // console.log($el.outerWidth(), '$el.outerWidth()');
+                        // console.log($el.outerHeight(), '$el.outerHeight()');
+
+                        var gap = parseInt(Math.max($el.outerWidth(), $el.outerHeight()) / 2);
+                        $el.css({
+                            left: parseInt($tagContainer.width() * pos.posX / width) - gap,
+                            top: parseInt($tagContainer.height() * pos.posY / height) - gap
+                        });
+
+                        applyOnClick($el, pos);
+                    });
+
+                    // set preview
+                    $.each(item.points, function (key, pos) {
+                        var $el = $(['<div class="photo-tags-preview-item">', '<div class="squared-photo-div">', '</div>', '<a href="' + pos.url + '" class="photo-tags-name">', '<span></span>', '</a>', '<div class="photo-tags-tag">', '<span>' + pos.number + '<span>', '</div>', '</div>'].join('')).appendTo($productContainer);
+
+                        var imageUrl = pos.imageUrl || url;
+                        $el.find('.squared-photo-div').css('background-image', 'url(' + imageUrl + ')');
+
+                        var name = pos.name || 'Untitled (' + pos.number + ')';
+                        $el.find('.photo-tags-name > span:first').text(name);
+
+                        applyOnClick($el, pos);
+                    });
+                };
+
+                image.src = url;
+            });
+
+            $popup.modal('show');
+        },
+
+        setupPopup: function setupPopup() {
+            var self = this;
+            $(this.$el).on('click', '.photo-card', function (e) {
+                e.preventDefault();
+                self.showPopup($(this));
+            });
+        },
+
         selecetAll: function selecetAll() {
             // console.log('selecetAll()');
         },
@@ -10174,13 +10346,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('div', {}, [_c('div', {
-    attrs: {
-      "infinite-scroll": "",
-      "infinite-scroll-immediate-check": "false",
-      "infinite-scroll-distance": "0.5"
-    }
-  }, [_c('div', {
+  return _c('div', {}, [_c('div', [(_vm.subtitle) ? _c('div', {
+    staticClass: "row small-gutter subtitle"
+  }, [_vm._m(0)]) : _vm._e(), _vm._v(" "), _c('div', {
     staticClass: "row small-gutter content"
   }, _vm._l((_vm.items), function(item) {
     return _c('div', {
@@ -10197,7 +10365,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       staticClass: "video-wrapper"
     }), _vm._v(" "), _c('span', [_c('span', [_c('span', [_c('a', {
       attrs: {
-        "href": item.images.standard_resolution.url
+        "href": _vm.photoLink(item)
       }
     }, [_c('div', {
       staticClass: "squared-photo-div",
@@ -10213,8 +10381,12 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       expression: "loading"
     }],
     staticClass: "loading-view"
-  }, [_vm._m(0)])])
+  }, [_vm._m(1)])])
 },staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('div', {
+    staticClass: "col-xs-12"
+  }, [_c('div', [_c('span', [_vm._v("Click an image to shop")])]), _vm._v(" "), _c('hr')])
+},function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('div', {
     staticClass: "uil-spin-css",
     staticStyle: {

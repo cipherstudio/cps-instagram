@@ -46,39 +46,79 @@ class InstagramMedia extends Model
         return $this->itemCountPerPage;
     }
 
+    protected function transformPointRow($row)
+    {
+        settype($row, 'array');
+        //@if( strpos($data->{$row->field}, 'http://') === false && strpos($data->{$row->field}, 'https://') === false){{ Voyager::image( $data->{$row->field} ) }}@else{{ $data->{$row->field} }}@endif
+        if (strpos($row['image_url'], 'http://') === false && strpos($row['image_url'], 'https://') === false) {
+            $row['image_url'] = app('voyager')->image( $row['image_url'] );
+        }
+
+        $data = array(
+            'id' => $row['id'],
+            'name' => $row['name'],
+            'number' => $row['number'],
+            'posX' => $row['pos_x'],
+            'posY' => $row['pos_y'],
+            'size' => $row['size'],
+            'url' => $row['url'],
+            'mediaId' => $row['media_id'],
+            'imageUrl' => $row['image_url'],
+            'createdAt' => $row['created_at'],
+            'updatedAt' => $row['updated_at'],
+        );
+
+        return $data;
+    }
+
     public function getPoints()
     {
         $rows = DB::table('instagram_points')->where('media_id', $this->id)->get();
 
         $points = array();
         foreach ($rows as $row) {
-            settype($row, 'array');
-
-            //@if( strpos($data->{$row->field}, 'http://') === false && strpos($data->{$row->field}, 'https://') === false){{ Voyager::image( $data->{$row->field} ) }}@else{{ $data->{$row->field} }}@endif
-            if (strpos($row['image_url'], 'http://') === false && strpos($row['image_url'], 'https://') === false) {
-                $row['image_url'] = app('voyager')->image( $row['image_url'] );
-            }
-
-            $points[] = array(
-                'id' => $row['id'],
-                'name' => $row['name'],
-                'number' => $row['number'],
-                'posX' => $row['pos_x'],
-                'posY' => $row['pos_y'],
-                'size' => $row['size'],
-                'url' => $row['url'],
-                'mediaId' => $row['media_id'],
-                'imageUrl' => $row['image_url'],
-                'createdAt' => $row['created_at'],
-                'updatedAt' => $row['updated_at'],
-            );
+            $points[] = $this->transformPointRow($row);
         }
 
         return $points;
     }
 
+    protected function applyDataPoints(&$rows)
+    {
+        
+        $mediaIds = array_filter(array_map(function($media) {
+            return (isset($media['id']) && !empty($media['id'])) ? $media['id'] : '';
+        }, $rows));
+
+        // get all points and map them
+
+        $points = DB::table('instagram_points')
+            ->whereIn('media_id', $mediaIds)
+            ->orderBy('media_id', 'desc')
+            ->orderBy('number', 'asc')
+            ->get();
+
+        $map = array();
+        foreach ($points as $point) {
+            $data = $this->transformPointRow($point);
+            $mediaId = $data['mediaId'];
+            if (!isset($map[$mediaId])) {
+                $map[$mediaId] = array();
+            }
+            $map[$mediaId][] = $this->transformPointRow($point);
+        }
+
+        // apply for all media $rows
+        while (list($key, ) = each ($rows)) {
+            $mediaId = $rows[$key]['id'];
+            if (isset($map[$mediaId])) {
+                $rows[$key]['points'] = $map[$mediaId];
+            }
+        }
+    }
+
     // alias to instagram format
-    public function transformRow($row)
+    protected function transformRow($row)
     {
         $data = array(
             'id' => $row->id,
@@ -115,10 +155,11 @@ class InstagramMedia extends Model
     protected function _queryBuilderWhere($query)
     {
         // date may be equal more than one row
+        $query->orderBy('created_at', 'desc') ;
         $query->orderBy('id', 'desc') ;
 
         // @todo where `enabled` and `count`
-        #$query->where('enabled', 0);
+        $query->where('enabled', 1);
     }
 
     public function request($url)
@@ -161,6 +202,9 @@ class InstagramMedia extends Model
 
         // pagination
         if (count($data['data'])) {
+
+            $this->applyDataPoints($data['data']);
+
             $nextMaxId = end($data['data'])['id'];
 
             // make sure record must found
