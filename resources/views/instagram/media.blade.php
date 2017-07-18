@@ -1,3 +1,18 @@
+<?php
+    // @fixed
+    $role_name = '';
+    $roles = \TCG\Voyager\Models\Role::all();
+    $found = false;
+    foreach ($roles as $role) {
+        if ($role->id == auth()->user()->role_id) {
+            $role_name = $role->name;
+            $found = true;
+        }
+    }
+    if (!$role_name) {
+        $role_name = 'admin';
+    }
+?>
 @extends('voyager::master')
 
 @section('page_title','All '.$dataType->display_name_plural)
@@ -5,15 +20,14 @@
 @section('page_header')
     <h1 class="page-title">
         <i class="{{ $dataType->icon }}"></i> {{ $dataType->display_name_plural }}
-        @if (Voyager::can('add_'.$dataType->name))
+        @if (Voyager::can('add_'.$dataType->name) && $role_name == 'admin')
             <a href="{{ route('voyager.'.$dataType->slug.'.create') }}" class="btn btn-success">
                 <i class="voyager-plus"></i> Add New
             </a>
-
+        @endif
             <a href="{{ route('instagram.sync.index') }}" class="btn btn-success">
                 <i class="voyager-cloud-download"></i> Sync
             </a>
-        @endif
     </h1>
     @include('voyager::multilingual.language-selector')
 @stop
@@ -111,12 +125,13 @@
                                             <a href="{{ route('instagram.point.points', $data->id) }}" title="Edit" class="btn btn-sm btn-success pull-right edit">
                                                 <i class="voyager-edit"></i> <span class="hidden-xs hidden-sm">Pointing</span>
                                             </a>
-
+                                            @if ($role_name == 'admin')
                                             <a href="{{ route('voyager.'.$dataType->slug.'.edit', $data->id) }}" title="Edit" class="btn btn-sm btn-primary pull-right edit">
                                                 <i class="voyager-edit"></i> <span class="hidden-xs hidden-sm">Edit</span>
                                             </a>
+                                            @endif
                                         @endif
-                                        @if (Voyager::can('read_'.$dataType->name))
+                                        @if (Voyager::can('read_'.$dataType->name) && $role_name == 'admin')
                                             <a href="{{ route('voyager.'.$dataType->slug.'.show', $data->id) }}" title="View" class="btn btn-sm btn-warning pull-right">
                                                 <i class="voyager-eye"></i> <span class="hidden-xs hidden-sm">View</span>
                                             </a>

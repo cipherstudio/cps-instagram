@@ -29,6 +29,9 @@ return [
     #'user_id' => '209201990',
     #'allow_custom_user' => false,
 
+    'publisher_route_index' => 'voyager.instagram-media.index',
+    // 'publisher_route_index' => 'instagram.sync.index',
+
     'force_oauth' => true,
 
     // pagination

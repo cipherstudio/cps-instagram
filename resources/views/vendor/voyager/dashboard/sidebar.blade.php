@@ -31,6 +31,7 @@
         </div>
 
         <?php
+            // @fixed
             $role_name = '';
             $roles = \TCG\Voyager\Models\Role::all();
             $found = false;
