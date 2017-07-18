@@ -10386,6 +10386,25 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
     methods: {
 
+        photoClass: function photoClass(item) {
+            var cls = 'photo-card';
+
+            $.each(this.columnClass, function (k, v) {
+                if (v === true) {
+                    cls += ' ' + k;
+                }
+            });
+
+            var exists = item.exists || false;
+            if (exists) {
+                cls += ' x-state-exists';
+            };
+
+            cls += ' photo-card-type-' + item.type;
+
+            return cls;
+        },
+
         photoLink: function photoLink(item) {
             var url = '';
             if ($.type(item.points) == 'undefined') {
@@ -10481,7 +10500,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
             var container = $(this.$el);
             var options = {
-                filter: '.photo-card:not(.x-state-exists,.x-state-error)',
+                filter: '.photo-card.photo-card-type-image:not(.x-state-exists,.x-state-error)',
                 cancel: 'input,textarea,button,select,option'
             };
             var events = {};
@@ -10583,6 +10602,49 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             });
 
             container.selectable(options);
+        },
+
+        getUrl: function getUrl(item) {
+            var url = item.images.standard_resolution.url;
+            return url;
+        },
+
+        getHdUrl: function getHdUrl(item) {
+            var url = this.getUrl(item);
+
+            // try to use unofficial path for highest resolution
+            // data: https://scontent.cdninstagram.com/t51.2885-15/s640x640/sh0.08/e35/12394075_1504607683175422_1353233513_n.jpg path: standard_resolution
+            // old changed:  https://igcdn-photos-f-a.akamaihd.net://t51.2885-ak-15/s640x640/e35/12394075_1504607683175422_1353233513_n.jpg path: unofficial ig
+            // now changed:  https://igcdn-photos-g-a.akamaihd.net/hphotos-ak-xta1/t51.2885-15/e35/12394075_1504607683175422_1353233513_n.jpg
+            var reg = /.+?\:\/\/.+?(\/.+?)(?:#|\?|$)/;
+            var path = reg.exec(url)[1];
+
+            var host = 'https://igcdn-photos-f-a.akamaihd.net',
+                paths = path.split('/');
+
+            var hdUrl = [host, 'hphotos-ak-xta1', paths[1], paths[paths.length - 2], paths[paths.length - 1]].join('/');
+
+            return hdUrl;
+        },
+
+        getSelectedItems: function getSelectedItems() {
+            var self = this,
+                $selectable = $(self.$el).selectable('instance'),
+                items = [];
+
+            $selectable.selectees.each(function () {
+                var $el = $(this),
+                    data = $el.data('selectable-item');
+
+                if (!data.selected) return;
+
+                var id = $el.data('id').split('-').pop(),
+                    item = self.getItem(id);
+
+                items.push(item);
+            });
+
+            return items;
         },
 
         getItem: function getItem(id) {
@@ -10744,8 +10806,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     staticClass: "row small-gutter content"
   }, _vm._l((_vm.items), function(item) {
     return _c('div', {
-      staticClass: "photo-card",
-      class: _vm.columnClass,
+      class: _vm.photoClass(item),
       attrs: {
         "data-id": 'photo-' + item.id
       }
@@ -10762,7 +10823,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     }, [_c('div', {
       staticClass: "squared-photo-div",
       style: ({
-        'background-image': 'url(' + item.images.standard_resolution.url + ')'
+        'background-image': 'url(' + _vm.getUrl(item) + ')'
       })
     })])])])])])])])
   }))]), _vm._v(" "), _c('div', {

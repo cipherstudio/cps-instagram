@@ -24,7 +24,19 @@ return [
         ]
     ],
 
-    'page_size' => 5
+
+    // account
+    #'user_id' => '209201990',
+    #'allow_custom_user' => false,
+
+    'force_oauth' => true,
+
+    // pagination
+    'page_size' => 20,
+    'sync_page_size' => 20,
+
+    // sync
+    'allow_duplicates' => false
 
 ];
 

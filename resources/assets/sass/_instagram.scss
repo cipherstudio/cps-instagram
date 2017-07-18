@@ -148,7 +148,14 @@ hr {
         cursor: pointer;
     }
 }
-
+.photo-card-type-video,
+.photo-card-type-carousel,
+.photo-card.x-state-exists{
+    opacity: .5;
+    .photo-card-box a{
+        cursor: not-allowed;
+    }
+}
 .photo-card-box {
     position: relative;
     width: 100%;

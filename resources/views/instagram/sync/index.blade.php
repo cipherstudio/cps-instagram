@@ -9,7 +9,8 @@
         <form method="POST" action="{{ route('instagram.sync.import') }}" style="display:inline">
             {{ csrf_field() }}
             <a href="javascript:void" class="btn btn-success instagram-media-import">
-                <i class="voyager-cloud-download"></i> Import
+                <i class="voyager-cloud-download"></i> 
+                <i class="glyphicon glyphicon-refresh hidden"></i> Import
             </a>
         </form>
     </h1>
@@ -38,6 +39,13 @@
 
 @section('css')
 <link rel="stylesheet" type="text/css" href="{{ URL::asset('css/instagram.css') }}">
+<style>
+.glyphicon-refresh {
+    -webkit-animation: spin 0.6s infinite linear;
+    -moz-animation: spin 0.6s infinite linear;
+    animation: spin 0.6s infinite linear;
+}
+</style>
 @stop
 
 @section('javascript')
@@ -104,28 +112,13 @@
             return;
         };
 
+        var instagram = vm.$refs.instagram;
         var items = [];
-        $photos.each(function() {
-            // now url is standard resolution
-            var url = $('.squared-photo-div', this)
-                .css('background-image')
-                .replace(/^url\(['"](.+)['"]\)/, '$1');
-
-            // try to use unofficial path for highest resolution
-            // data: https://scontent.cdninstagram.com/t51.2885-15/s640x640/sh0.08/e35/12394075_1504607683175422_1353233513_n.jpg path: standard_resolution
-            // old changed:  https://igcdn-photos-f-a.akamaihd.net://t51.2885-ak-15/s640x640/e35/12394075_1504607683175422_1353233513_n.jpg path: unofficial ig
-            // now changed:  https://igcdn-photos-g-a.akamaihd.net/hphotos-ak-xta1/t51.2885-15/e35/12394075_1504607683175422_1353233513_n.jpg
-            var reg = /.+?\:\/\/.+?(\/.+?)(?:#|\?|$)/;
-            var path = a = reg.exec(url)[1];
-
-            var host = 'https://igcdn-photos-f-a.akamaihd.net',
-                paths = path.split('/');
-
-            var hdUrl = [host, 'hphotos-ak-xta1', paths[1], paths[paths.length - 2], paths[paths.length - 1]].join('/');
-
+        $.each(instagram.getSelectedItems(), function(key, value) {
             items.push({
-                url: url,
-                hd_url: hdUrl
+                url: instagram.getUrl(value),
+                hd_url: instagram.getHdUrl(value),
+                data: value
             });
         });
 
@@ -133,7 +126,29 @@
             _token = $form.find('[name=_token]').val(),
             url = $form.attr('action');
 
-        $(self).addClass('disabled');
+        // loading and block screen
+        var loadingOn = function() {
+            $(self)
+                .addClass('disabled')
+                .find('i').toggleClass('hidden');
+
+            $('<div class="modal-backdrop"></div>')
+                .css({
+                    opacity: 0.2,
+                    cursor: 'wait'
+                })
+                .appendTo(document.body);
+        };
+
+        var loadingOff = function() {
+            $(self)
+                .removeClass('disabled')
+                .find('i').toggleClass('hidden');
+
+            $('.modal-backdrop').remove();
+        };
+
+        loadingOn();
 
         $.ajax({
             type: "POST",
@@ -147,15 +162,7 @@
             // @todo error handler
 
             success: function(data) {
-
-                // @todo action after success
-                // console.log(data, 'data');
-                // return;
-
-
-                $(self).removeClass('disabled');
-
-                // @fixed 
+                loadingOff();
                 window.location.href = "{{ url("admin/instagram-media") }}";
             }
         });

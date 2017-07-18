@@ -48,6 +48,12 @@ class SyncController extends \TCG\Voyager\Http\Controllers\VoyagerBreadControlle
         $syncUrl = route('instagram.sync.load');
         $syncData = $sync->getSyncData();
 
+        // invalid token
+        if ($sync->isTokenError()) {
+            $sync->clearAccessTokenUrl();
+            return redirect($sync->getAccessTokenUrl());
+        }
+
         // GET THE SLUG, ex. 'posts', 'pages', etc.
         #$slug = $this->getSlug($request);
         $slug = 'instagram-media';

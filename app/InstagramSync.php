@@ -28,6 +28,8 @@ class InstagramSync extends Model
      */
     protected $itemCountPerPage = 10;
 
+    protected $tokenError = false;
+
     public function getConfig()
     {
         if (!$this->config) {
@@ -45,7 +47,7 @@ class InstagramSync extends Model
         $this->setAccessToken($accessToken);
 
         $config = $this->getConfig();
-        $this->setItemCountPerPage($config['page_size']);
+        $this->setItemCountPerPage($config['sync_page_size']);
     }
 
     public function hasAccessToken()
@@ -73,6 +75,13 @@ class InstagramSync extends Model
 
         $url = $config['oauth']['url'] . '?' .http_build_query($args);
         return $url;
+    }
+
+    public function clearAccessTokenUrl()
+    {
+        setcookie(\App\InstagramSync::COOKIE_ACCESS_TOKEN_KEY, null, -1, '/');
+        unset($_COOKIE[\App\InstagramSync::COOKIE_ACCESS_TOKEN_KEY]);
+        $this->setAccessToken('');
     }
 
     public function getApiUrl()
@@ -139,16 +148,26 @@ class InstagramSync extends Model
             $data = json_decode($body, true);
 
         } catch (\Exception $e) {
-
-            //@todo handle data
-            zf_dump($e->getMessage());
+            if ($error = json_decode($body)) {
+                if ($error->meta->code == 400 || $error->meta->error_type == 'OAuthAccessTokenException') {
+                    // clear external, not auto now
+                    $this->tokenError = true;
+                }
+            }
         }
 
         return $data;
     }
 
+    public function isTokenError()
+    {
+        return $this->tokenError;
+    }
+
     public function getSyncData($url = '')
     {
+        $config = $this->getConfig();
+
         if (!$url) {
             $accountUrl = $this->getEndpointUrl('get_current_account') . '?' . http_build_query(array('access_token' => $this->getAccessToken()));
             $data = $this->request($accountUrl);
@@ -158,10 +177,36 @@ class InstagramSync extends Model
                 'access_token' => $this->getAccessToken(), 
                 'count' => $this->getItemCountPerPage()
             ));
+
             $url = $this->getApiUrl() . '/users/' . $userId . '/media/recent' . '?' . $queryString;
         }
-        
+
         $data = $this->request($url);
+
+        // apply x-state-exits
+        settype($data['data'], 'array');
+
+        $uids = [];
+        while (list($key,) = each($data['data'])) {
+            $data['data'][$key]['exists'] = false;
+            $uids[] = $data['data'][$key]['id'];
+        }
+
+        if (!$config['allow_duplicates']) {
+            $rows = DB::table('instagram_media')
+                        ->whereIn('uid', $uids)
+                        ->get();
+            foreach ($rows as $row) {
+                $uid = $row->uid;
+                reset($data['data']);
+                while (list($key,) = each($data['data'])) {
+                    $exists = $uid == $data['data'][$key]['id'];
+                    if ($exists) {
+                        $data['data'][$key]['exists'] = $exists;
+                    }
+                }
+            }
+        }
 
         return $data;
     }
@@ -191,18 +236,25 @@ class InstagramSync extends Model
         $now = date('F jS, Y h:i A');
         $uploadedFileMap = array('thumbnail_url' => 'url', 'url' => 'hd_url');
 
+        settype($item['data'], 'array');
+
+        // zf_dump($item, '$item');
+
         $input = array(
-            'name' => '',
-            'type' => 'image',
-            'width' => '640',
-            'height' => '640',
-            'thumbnail_width' => '320',
-            'thumbnail_height' => '320',
-            'data' => null,
-            'enabled' => 'off',
-            'count' => 0,
-            'created_at' => $now,
-            'updated_at' => $now
+            'uid'              => $item['data']['id'],
+            'name'             => '', // use file name for this case
+            'caption'          => @$item['data']['caption']['text'],
+            'type'             => $item['data']['type'],
+            'width'            => '1080',
+            'height'           => '1080',
+            'thumbnail_width'  => $item['data']['images']['standard_resolution']['width'],
+            'thumbnail_height' => $item['data']['images']['standard_resolution']['height'],
+            'data'             => json_encode($item['data']),
+            'enabled'          => 'off',
+            'count'            => 0,
+            'sort'             => (int) $item['data']['created_time'], // used for sort according by instagram feed
+            'created_at'       => $now,
+            'updated_at'       => $now
         );
 
         foreach ($uploadedFileMap as $targetKey => $sourceKey) {
@@ -226,6 +278,9 @@ class InstagramSync extends Model
         if ($input['enabled'] == 'off') {
             unset($input['enabled']);
         }
+
+        // zf_dump($input, '$input');
+        // exit;
 
         $request->replace($input);
         $request->files->replace(array('url' => $input['url'], 'thumbnail_url' => $input['thumbnail_url']));

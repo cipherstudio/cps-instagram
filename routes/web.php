@@ -11,39 +11,17 @@
 |
 */
 
-/*
-Route::get('/', function () {
-    return view('welcome');
-});
-
-Auth::routes();
-
-Route::get('/home', 'HomeController@index')->name('home');
-*/
-
-# BEGIN: CPS Instagram
-
+// home
 Route::get('/', ['uses' => 'Instagram\IndexController@index', 'as' => 'instagram.index.index']);
 Route::get('/load', ['uses' => 'Instagram\IndexController@load', 'as' => 'instagram.index.load']);
 
-
-Auth::routes();
-
-// @todo disable route login, register, forgot password
-// Route::get('/home', 'HomeController@index')->name('home');
-
-
-
-// END: CPS Instagram
-
-
-
-
-
-// api
+// oauth
 Route::get('instagram/oauth', ['uses' => 'Instagram\SyncController@oauth', 'as' => 'instagram.sync.oauth']);
 
+// remove frontend auth
+//Auth::routes();
 
+// admin
 Route::group(['prefix' => 'admin'], function () {
     Voyager::routes();
 
@@ -63,11 +41,6 @@ Route::group(['prefix' => 'admin'], function () {
 
         // frontend
 
-
-
     });
-
-    
-
 
 });

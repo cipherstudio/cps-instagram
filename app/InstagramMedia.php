@@ -17,10 +17,6 @@ class InstagramMedia extends Model
     public function init()
     {
         $config = $this->getConfig();
-
-        // @fixed
-        $config['page_size'] = 20;
-
         $this->setItemCountPerPage($config['page_size']);
     }
 

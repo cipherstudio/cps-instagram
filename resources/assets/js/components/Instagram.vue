@@ -10,7 +10,7 @@
             </div>
         </div>
         <div class="row small-gutter content">
-                <div class="photo-card" v-bind:class="columnClass" v-for="item in items" v-bind:data-id="'photo-' + item.id">
+                <div :class="photoClass(item)" v-for="item in items" v-bind:data-id="'photo-' + item.id">
                     <div class="photo-card-box">
                         <div class="photo-card-box-inner">
                             <div class="video-wrapper"></div>
@@ -18,7 +18,7 @@
                                 <span>
                                     <span>
                                         <a :href="photoLink(item)"> 
-                                            <div class="squared-photo-div" :style="{ 'background-image': 'url(' + item.images.standard_resolution.url + ')' }">
+                                            <div class="squared-photo-div" :style="{ 'background-image': 'url(' + getUrl(item) + ')' }">
                                             </div>
                                         </a>
                                     </span>
@@ -75,6 +75,25 @@
         },
 
         methods: {
+
+            photoClass: function(item) {
+                var cls = 'photo-card';
+
+                $.each(this.columnClass, function(k, v) {
+                    if (v === true) {
+                        cls += ' ' + k;
+                    }
+                });
+
+                var exists = item.exists || false;
+                if (exists) {
+                    cls += ' x-state-exists';
+                };
+
+                cls += ' photo-card-type-' + item.type;
+
+                return cls;
+            },
 
             photoLink: function(item) {
                 var url = '';
@@ -173,7 +192,7 @@
 
                 var container = $(this.$el);
                 var options = {
-                    filter: '.photo-card:not(.x-state-exists,.x-state-error)',
+                    filter: '.photo-card.photo-card-type-image:not(.x-state-exists,.x-state-error)',
                     cancel: 'input,textarea,button,select,option'
                 };
                 var events = {};
@@ -279,6 +298,49 @@
                 });
 
                 container.selectable(options);
+            },
+
+            getUrl: function(item) {
+                var url = item.images.standard_resolution.url;
+                return url;
+            },
+
+            getHdUrl: function(item) {
+                var url = this.getUrl(item);
+
+                // try to use unofficial path for highest resolution
+                // data: https://scontent.cdninstagram.com/t51.2885-15/s640x640/sh0.08/e35/12394075_1504607683175422_1353233513_n.jpg path: standard_resolution
+                // old changed:  https://igcdn-photos-f-a.akamaihd.net://t51.2885-ak-15/s640x640/e35/12394075_1504607683175422_1353233513_n.jpg path: unofficial ig
+                // now changed:  https://igcdn-photos-g-a.akamaihd.net/hphotos-ak-xta1/t51.2885-15/e35/12394075_1504607683175422_1353233513_n.jpg
+                var reg = /.+?\:\/\/.+?(\/.+?)(?:#|\?|$)/;
+                var path = reg.exec(url)[1];
+
+                var host = 'https://igcdn-photos-f-a.akamaihd.net',
+                    paths = path.split('/');
+
+                var hdUrl = [host, 'hphotos-ak-xta1', paths[1], paths[paths.length - 2], paths[paths.length - 1]].join('/');
+
+                return hdUrl;
+            },
+
+            getSelectedItems: function() {
+                var self = this,
+                    $selectable = $(self.$el).selectable('instance'),
+                    items = [];
+
+                $selectable.selectees.each(function() {
+                    var $el = $(this),
+                        data = $el.data('selectable-item');
+
+                    if (!data.selected) return;
+
+                    var id = $el.data('id').split('-').pop(),
+                        item = self.getItem(id);
+                    
+                    items.push(item);
+                });
+
+                return items;
             },
 
             getItem: function(id) {
