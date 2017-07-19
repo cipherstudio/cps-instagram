@@ -35,7 +35,7 @@ return [
     'force_oauth' => true,
 
     // pagination
-    'page_size' => 20,
+    'page_size' => 12,
     'sync_page_size' => 20,
 
     // sync

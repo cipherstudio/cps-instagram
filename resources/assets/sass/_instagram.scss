@@ -1,3 +1,12 @@
+.app-container {
+    footer {
+        padding: 8px 0;
+        text-align: right;
+        font-size: .9em;
+        border-top: 1px solid #ccc;
+    }
+}
+
 /* navbar */
 .header {
     padding: 0 12px;
@@ -56,12 +65,8 @@
     top: 10px;
 }
 
-@media only screen and (min-width: 1200px) {
-    .desktop.content-container, .desktop.top-section .inner {
-        max-width: 1200px;
-        margin: auto;
-    }
-}
+
+
 
 /* content */
 
@@ -110,6 +115,8 @@ hr {
     margin: 0;
     color: #7e7e7e;
     padding: 18px 0 6px;
+    border-bottom: 1px solid #ccc;
+    margin-bottom: 6px;
 }
 
 .subtitle hr {
@@ -198,6 +205,17 @@ hr {
     }
 }
 
+/* responsive */
+
+/* @note ORIGINAL 4 COLUMNS */
+/*
+@media only screen and (min-width: 1200px) {
+    .desktop.content-container, .desktop.top-section .inner, footer {
+        max-width: 1200px;
+        margin: auto;
+    }
+}
+
 @media only screen and (min-width: 1224px) and (orientation: landscape) {
     .main-container .content-container {
         padding-top: 58px;
@@ -210,6 +228,30 @@ hr {
         margin: auto;
     }
 }
+*/
+
+/* @note CIPHER.CO.TH 3 COLUMNS */
+@media only screen and (min-width: 935px) {
+    .desktop.content-container, .desktop.top-section .inner, footer {
+        max-width: 935px;
+        margin: auto;
+    }
+}
+
+@media only screen and (min-width: 1224px) and (orientation: landscape) {
+    .main-container .content-container {
+        padding-top: 58px;
+    }
+}
+
+@media only screen and (min-width: 935px) {
+    .desktop.content-container, .desktop.top-section .inner {
+        max-width: 935px;
+        margin: auto;
+    }
+}
+
+
 
 /* tags */
 .photo-tags {

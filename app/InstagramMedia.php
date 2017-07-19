@@ -145,6 +145,7 @@ class InstagramMedia extends Model
             ));
             $url = route('instagram.index.load') . '?' . $queryString;
         }
+
         return $this->request($url);
     }
 

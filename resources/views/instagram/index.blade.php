@@ -29,7 +29,11 @@
             @include('instagram.partials.index.navbar')
             <div class="main-container">
                 @yield('content')
+                <footer>
+                © CPS CHAPS
+                </footer>
             </div>
+            
         </div>
         <script type="text/javascript" src="{{ URL::asset('js/app.js') }}"></script>
         @yield('javascript')

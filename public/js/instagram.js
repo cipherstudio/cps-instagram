@@ -9953,7 +9953,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
 
@@ -9972,7 +9971,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             syncData: {},
             items: [],
 
-            column: 4,
+            column: 3,
 
             $popup: null
         };
@@ -10451,7 +10450,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
 },staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('div', {
     staticClass: "col-xs-12"
-  }, [_c('div', [_c('span', [_vm._v("Click an image to shop")])]), _vm._v(" "), _c('hr')])
+  }, [_c('div', [_c('span', [_vm._v("Click an image to shop")])])])
 },function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('div', {
     staticClass: "uil-spin-css",

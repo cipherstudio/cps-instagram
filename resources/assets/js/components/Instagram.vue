@@ -6,7 +6,6 @@
                 <div>
                     <span>Click an image to shop</span>
                 </div>
-                <hr />
             </div>
         </div>
         <div class="row small-gutter content">
@@ -53,7 +52,7 @@
                 syncData: {},
                 items: [],
 
-                column: 4,
+                column: 3,
 
                 $popup: null,
             };
