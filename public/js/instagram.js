@@ -10278,7 +10278,43 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         getPopup: function getPopup() {
             var self = this;
             if ($.type(self.$popup) == 'undefined') {
-                var tpl = ['<div class="multiproduct-modal modal fade" tabindex="-1" role="dialog">', '<div class="modal-dialog">', '<div class="modal-content">', '<div class="modal-header">', '<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span', ' aria-hidden="true">&times;</span></button>', '<h3 class="modal-title">Items to Shop</h3>', '</div>', '<div class="modal-body">', '<div class="multiproduct-view">', '<div class="multiproduct-view-inner">', '<div class="row no-inner-gutter container-row">', '<div class="multiproduct-photo-container col-xs-12 col-sm-7">', '<div class="squared-product-details-image-div">', '<div class="spatial-tag-container photo-tags-wrapper">', '</div>', '</div>', '</div>', '<div id="multiproduct-list" class="col-sm-5 hidden-xs multiproduct-product-list">', '<div class="multiproduct-products">', '</div>', '</div>', '</div>', '</div>', '</div>', '</div>', '</div><!-- /.modal-content -->', '</div><!-- /.modal-dialog -->', '</div><!-- /.modal -->'].join('');
+                var tpl = [
+
+                // @note ORIGINAL
+                /*
+                '<div class="multiproduct-modal modal fade" tabindex="-1" role="dialog">',
+                    '<div class="modal-dialog">',
+                        '<div class="modal-content">',
+                            '<div class="modal-header">',
+                                '<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span',
+                                            ' aria-hidden="true">&times;</span></button>',
+                                '<h3 class="modal-title">Items to Shop</h3>',
+                            '</div>',
+                            '<div class="modal-body">',
+                                 '<div class="multiproduct-view">',
+                                    '<div class="multiproduct-view-inner">',
+                                        '<div class="row no-inner-gutter container-row">',
+                                            '<div class="multiproduct-photo-container col-xs-12 col-sm-7">',
+                                                '<div class="squared-product-details-image-div">',
+                                                    '<div class="spatial-tag-container photo-tags-wrapper">',
+                                                    '</div>',
+                                                '</div>',
+                                            '</div>',
+                                            '<div id="multiproduct-list" class="col-sm-5 hidden-xs multiproduct-product-list">',
+                                                '<div class="multiproduct-products">',
+                                                '</div>',
+                                            '</div>',
+                                        '</div>',
+                                    '</div>',
+                                '</div>',
+                              '</div>',
+                        '</div><!-- /.modal-content -->',
+                    '</div><!-- /.modal-dialog -->',
+                '</div><!-- /.modal -->'
+                */
+
+                // @note CIPEHR.CO.TH
+                '<div class="cps multiproduct-modal modal fade" tabindex="-1" role="dialog">', '<div class="modal-dialog">', '<div class="modal-content">', '<div class="modal-body">', '<div class="multiproduct-view">', '<div class="multiproduct-view-inner">', '<div class="row no-inner-gutter container-row">', '<div class="multiproduct-photo-container col-xs-12 col-sm-7">', '<div class="squared-product-details-image-div">', '<div class="spatial-tag-container photo-tags-wrapper">', '', '</div>', '</div>', '</div>', '<div id="multiproduct-list" class="col-sm-5 hidden-xs multiproduct-product-list">', '<div class="modal-header">', '<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span', ' aria-hidden="true">&times;</span></button>', '<h3 class="modal-title">Items to Shop</h3>', '</div>', '<div class="multiproduct-products">', '', '</div>', '</div>', '</div>', '</div>', '</div>', '</div>', '</div><!-- /.modal-content -->', '</div><!-- /.modal-dialog -->', '</div><!-- /.modal -->'].join('');
 
                 self.$popup = $(tpl).appendTo('body');
                 self.$popup.on("hidden.bs.modal", function () {

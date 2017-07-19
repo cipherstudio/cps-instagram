@@ -362,3 +362,43 @@ hr {
 }
 
 
+/* CPS Override */
+.cps.modal {
+    .modal-header {
+        height: 87px;
+        margin-right: 12px;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        .close {
+            font-size: 3.2em;
+        }
+    }
+    .modal-content {
+        box-shadow: inherit;
+    }
+    .squared-photo-div {
+        border: 1px solid $cps-border-color;
+    }
+    .photo-tags-preview-item .photo-tags-tag {
+        left: 2px;
+        top: 2px;
+    }
+    .photo-tags-tag {
+        box-shadow: inherit;
+        border: 1px solid $cps-border-color;
+    }
+}
+
+@media only screen and (min-width: 768px) {
+    .cps .multiproduct-product-list {
+        overflow-y: auto;
+    }
+}
+@media only screen and (min-width: 768px) {
+    .cps .multiproduct-products {
+        top:87px;
+    }
+}
