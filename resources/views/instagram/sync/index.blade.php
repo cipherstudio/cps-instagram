@@ -138,6 +138,11 @@
                     cursor: 'wait'
                 })
                 .appendTo(document.body);
+
+            // @see voyager : master.blade.php
+
+
+
         };
 
         var loadingOff = function() {

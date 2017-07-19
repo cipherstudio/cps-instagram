@@ -8,7 +8,7 @@
                         <div class="ig-info-button">
                             <span class="ig-info-user">
                                 <span class="ig-info-inner">
-                                    <img class="ig-avatar" src="https://scontent-amt2-1.cdninstagram.com/t51.2885-19/s320x320/12383331_1546663375655181_1044486348_a.jpg" />
+                                    <img class="ig-avatar" src="{{ voyager_asset('images/logo-icon.png') }}" />
                                     <span class="store-name ng-binding">cpschaps</span>
                                 </span>
                             </span>
