@@ -462,6 +462,9 @@
                     id = $el.data('id').split('-').pop(),
                     item = self.getItem(id);
 
+                // @fixed
+                var doAutoName = false;
+
                 if (item.points.length == 1) {
                     window.location.href = $el.find('a').attr('href');
                     return;
@@ -560,7 +563,11 @@
                             var imageUrl = pos.imageUrl || url;
                             $el.find('.squared-photo-div').css('background-image', 'url(' + imageUrl + ')');
 
-                            var name = pos.name || ('Untitled (' + pos.number + ')');
+                            var name = pos.name || '';
+                            if (doAutoName && !name.length) {
+                                name = 'Untitled (' + pos.number + ')';
+                            };
+
                             $el.find('.photo-tags-name > span:first').text(name);
 
                             applyOnClick($el, pos);
