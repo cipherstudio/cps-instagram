@@ -11,6 +11,14 @@ const { mix } = require('laravel-mix');
  |
  */
 
+mix.webpackConfig({
+    resolve: {
+        alias: {
+            'photo-tags': '../resources/assets/js/jquery-plugins/jquery.photo-tags.js'  // relative to node_modules
+        }
+    }
+});
+
 mix.js('resources/assets/js/app.js', 'public/js')
     .js('resources/assets/js/instagram.js', 'public/js')
    .sass('resources/assets/sass/app.scss', 'public/css')

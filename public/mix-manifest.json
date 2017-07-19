@@ -3,5 +3,7 @@
   "/css/app.css": "/css/app.css",
   "/css/instagram/instagram.css": "/css/instagram/instagram.css",
   "/css/instagram.css": "/css/instagram.css",
-  "/js/instagram.js": "/js/instagram.js"
+  "/js/instagram.js": "/js/instagram.js",
+  "/js/jquery-photo-tags.js": "/js/jquery-photo-tags.js",
+  "/js/jquery.photo-tags.js": "/js/jquery.photo-tags.js"
 }

@@ -18,7 +18,7 @@
                                 <span>
                                     <span>
                                         <a :href="photoLink(item)"> 
-                                            <div class="squared-photo-div" :style="{ 'background-image': 'url(' + getUrl(item) + ')' }">
+                                            <div class="squared-photo-div" :style="{ 'background-image': 'url(' + getHdUrl(item) + ')' }">
                                             </div>
                                         </a>
                                     </span>
@@ -301,11 +301,11 @@
             },
 
             getUrl: function(item) {
-                var url = item.images.standard_resolution.url;
+                var url = item.images.thumbnail.url;
                 return url;
             },
 
-            getHdUrl: function(item) {
+            _getHdUrl: function(item) {
                 var url = this.getUrl(item);
 
                 // try to use unofficial path for highest resolution
@@ -321,6 +321,11 @@
                 var hdUrl = [host, 'hphotos-ak-xta1', paths[1], paths[paths.length - 2], paths[paths.length - 1]].join('/');
 
                 return hdUrl;
+            },
+
+            getHdUrl: function(item) {
+                var url = item.images.standard_resolution.url;
+                return url;
             },
 
             getSelectedItems: function() {
@@ -499,7 +504,7 @@
                                     '<div class="squared-photo-div">',
                                     '</div>',
                                     '<a href="' + pos.url + '" class="photo-tags-name">',
-                                        '<span></span>',
+                                        '<span class="photo-tags-name-text"></span>',
                                     '</a>',
                                     '<div class="photo-tags-tag">',
                                         '<span>' + pos.number + '<span>',

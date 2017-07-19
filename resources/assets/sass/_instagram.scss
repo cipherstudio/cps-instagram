@@ -264,6 +264,18 @@ hr {
     top: 0;
     left: 0;
 }
+.photo-tags-preview-item .photo-tags-name {
+    font-weight: 700;
+    font-size: .85em;
+    width: 100%;
+    display: inline-block;
+    overflow: hidden;
+    clear: both;
+    /*height: 30px;*/
+    /*line-height: 30px;*/
+    text-align:center;
+    padding-top:8px;
+}
 .photo-tags-preview-item .photo-tags-delete {
     width: 16px;
     height: 16px;
@@ -274,17 +286,20 @@ hr {
     background: url("../images/instagram/delete-32x32.png") no-repeat 0 0 transparent;
     background-size: 16px 16px;
     cursor: pointer;
+
+    -webkit-filter: grayscale(100%); /* Safari 6.0 - 9.0 */
+    filter: grayscale(100%);
 }
-.photo-tags-preview-item .photo-tags-name {
-    font-weight: 700;
-    font-size: .85em;
-    width: 100%;
-    display: inline-block;
-    overflow: hidden;
-    clear: both;
-    height: 30px;
-    line-height: 30px;
-    text-align:center;
+.photo-tags-preview-item a.photo-tags-name {
+    &:hover {
+        .photo-tags-delete {
+            -webkit-filter: inherit; /* Safari 6.0 - 9.0 */
+            filter: inherit;
+        }
+    }
+}
+.photo-tags-name-text {
+    min-height: 14px;
 }
 
 .photo-tags-form-wrapper {
