@@ -414,6 +414,13 @@
 
                                         '<div class="multiproduct-view">',
                                             '<div class="multiproduct-view-inner">',
+
+                                                '<div class="row menu-row">',
+                                                    '<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span',
+                                                        ' aria-hidden="true">&times;</span></button>',
+                                                    '<label>Store</label>',
+                                                '</div>',
+
                                                 '<div class="row no-inner-gutter container-row">',
                                                     '<div class="multiproduct-photo-container col-xs-12 col-sm-7">',
                                                         '<div class="squared-product-details-image-div">',
@@ -423,11 +430,11 @@
                                                         '</div>',
                                                     '</div>',
 
-                                                    '<div id="multiproduct-list" class="col-sm-5 hidden-xs multiproduct-product-list">',
+                                                    '<div id="multiproduct-list" class="col-xs-12 col-sm-5 multiproduct-product-list">',
 
                                                         '<div class="modal-header">',
                                                             '<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span',
-                                                                        ' aria-hidden="true">&times;</span></button>',
+                                                                ' aria-hidden="true">&times;</span></button>',
                                                             '<h3 class="modal-title">Items to Shop</h3>',
                                                         '</div>',
                                                         '<div class="multiproduct-products">',

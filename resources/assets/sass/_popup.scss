@@ -1,5 +1,9 @@
 .modal {
     color: #333;
+
+    .menu-row {
+        display: none;
+    }
 }
 .modal-header {
     min-height: 16.43px;
@@ -19,70 +23,11 @@
     margin-top: 15px;
 }
 
-@media only screen and (min-width: 768px) {
-    .multiproduct-modal .modal-body {
-        padding: 0;
-    }
-}
-@media (min-width: 768px) {
-    .modal-dialog {
-        width: 600px;
-        margin: 30px auto;
-    }
-}
-@media only screen and (min-width: 768px) {
-    .modal-dialog {
-        max-width: 920px;
-        min-width: 700px;
-        width: 95%;
-    }
-}
-@media only screen and (min-width: 768px) {
-    .multiproduct-modal .modal-dialog {
-        margin-top: 5%;
-    }
-}
+
 
 /* multiproduct-view */
 
-@media only screen and (min-width: 768px) {
-    .multiproduct-photo-container {
-        background-color: #f7f7f7;
-        padding-left: 0!important;
-        padding-right: 0!important;
-    }
-}
 
-@media only screen and (min-width: 768px) {
-    .multiproduct-product-list {
-        padding-left: 0!important;
-        padding-right: 0!important;
-        overflow-y: scroll;
-        max-height: 536px;
-        padding-bottom: 58.34%;
-        position: relative;
-    }
-}
-@media only screen and (min-width: 768px) {
-    .multiproduct-products {
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        left: 0;
-        right: 0;
-    }
-}
-@media only screen and (min-width: 768px) {
-    .container-row, .product-row {
-        margin-left: 0!important;
-        margin-right: 0!important;
-    }
-}
-@media only screen and (min-width: 768px) {
-    .product-row {
-        padding: 12px 0 0 12px!important;
-    }
-}
 .squared-image-div, .squared-product-details-image-div {
     background-size: contain;
     background-repeat: no-repeat;
@@ -93,11 +38,4 @@
 }
 .squared-product-details-image-div {
     background-color: #f7f7f7;
-}
-@media only screen and (min-width: 768px) {
-    .spatial-tag-container {
-        position: absolute;
-        left: 50%;
-        top: 50%;
-    }
 }
