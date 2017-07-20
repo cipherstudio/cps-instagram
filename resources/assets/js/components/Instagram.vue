@@ -416,8 +416,8 @@
                                             '<div class="multiproduct-view-inner">',
 
                                                 '<div class="row menu-row">',
-                                                    '<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span',
-                                                        ' aria-hidden="true">&times;</span></button>',
+                                                    '<button type="button" class="close" data-dismiss="modal" aria-label="Back"><span',
+                                                        ' aria-hidden="true">&lt;</span></button>',
                                                     '<label>Store</label>',
                                                 '</div>',
 

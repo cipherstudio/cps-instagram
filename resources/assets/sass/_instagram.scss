@@ -1,3 +1,7 @@
+/* global */
+
+/* app */
+
 .app-container {
     footer {
         padding: 8px 0;
@@ -477,8 +481,8 @@ hr {
     }
 }
 
-
-@media only screen and (max-width: 767px) and (min-width: 1px) and (orientation: portrait) {
+/* portrait */
+@media only screen and (max-width: 767px) and (min-width: 1px){
 
     /* app */
     .desktop .header, .desktop.top-section.collapsed .nav .button {
@@ -503,6 +507,7 @@ hr {
     }
     .app-container footer {
         text-align: center;
+        border: 1px solid transparent;
     }
 
     /* modal */
@@ -511,18 +516,18 @@ hr {
             display: block;
             height: 3.6em;
             border-bottom: 1px solid #ccc;
-            padding: 0 30px;
+            padding: 8px 30px;
 
             .close {
                 float:left;
                 margin-right: 8px;
-                font-size: 3.6em;
+                font-size: 2.4em;
             }
             label {
+                float: left;
                 font-size: 1.2em;
                 line-height: 1.2em;
-                margin-top: 1.1em;
-                float: left;
+                margin-top: .55em;
             }
         }
     }
@@ -536,16 +541,24 @@ hr {
         border: 0;
         border-radius: inherit;
     }
+    .modal-title {
+
+    }
     .cps.modal .modal-header {
         position: inherit;
         top: inherit;
         bottom: inherit;
         left: inherit;
         right: inherit;
+        height: 72px;
 
         .close {
             display: none;
         }
+    }
+
+    .modal-backdrop {
+        background-color: #fff;
     }
 
     /* tags */
