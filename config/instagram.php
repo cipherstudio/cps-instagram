@@ -34,6 +34,9 @@ return [
 
     'force_oauth' => true,
 
+    'sort_by' => 'sort',
+    'sort_dir' => 'DESC',
+
     // pagination
     'page_size' => 12,
     'sync_page_size' => 20,

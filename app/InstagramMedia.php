@@ -118,6 +118,7 @@ class InstagramMedia extends Model
     {
         $data = array(
             'id' => $row->id,
+            'sort' => $row->sort,
             'images' => array(
                 'thumbnail' => array(
                     'url' => app('voyager')->image($row->thumbnail_url),
@@ -151,12 +152,30 @@ class InstagramMedia extends Model
 
     protected function _queryBuilderWhere($query)
     {
+        $config = $this->getConfig();
+        $sortBy = 'created_at';
+        $sortDir = 'DESC';
+
+        if (isset($config['sort_by']) && isset($config['sort_dir'])) {
+            $sortBy = $config['sort_by'];
+            $sortDir = $config['sort_dir'];
+        }
+
         // date may be equal more than one row
-        $query->orderBy('created_at', 'desc') ;
-        $query->orderBy('id', 'desc') ;
+        $query->orderBy($sortBy, $sortDir);
+        // $query->orderBy('id', 'desc') ;
 
         // @todo where `enabled` and `count`
         $query->where('enabled', 1);
+    }
+
+    protected function _queryBuilderWhereMaxId($query, $maxId)
+    {
+        $config = $this->getConfig();
+        $sortBy = $config['sort_by'];
+        $sortDir = $config['sort_dir'];
+
+        $query->where($sortBy, ($sortDir == 'DESC' ? '<' : '>'), $maxId);
     }
 
     public function request($url)
@@ -180,7 +199,7 @@ class InstagramMedia extends Model
         $this->_queryBuilderWhere($query);
 
         if ($maxId) {
-            $query->where('id', '<', $maxId);
+            $this->_queryBuilderWhereMaxId($query, $maxId);
         }
 
         if ($count) {
@@ -201,13 +220,13 @@ class InstagramMedia extends Model
         if (count($data['data'])) {
 
             $this->applyDataPoints($data['data']);
-
-            $nextMaxId = end($data['data'])['id'];
+            $nextMaxId = end($data['data'])[$this->getConfig()['sort_by']];
 
             // make sure record must found
             $query = DB::table('instagram_media');
             $this->_queryBuilderWhere($query);
-            $query->where('id', '<', $nextMaxId);
+            $this->_queryBuilderWhereMaxId($query, $nextMaxId);
+
             $query->limit($count);
 
             $last = $query->first();
