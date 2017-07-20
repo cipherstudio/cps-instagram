@@ -91,6 +91,9 @@
                                 '<label>Photo</label>',
                                 '<input type="file" name="photo" accept="image/*" />',
                             '</div>',
+                            '<div class="form-group error hidden">',
+                                '<label></label>',
+                            '</div>',
                             '<div class="form-group pull-right">',
                                 '<button type="submit" class="btn btn-primary">Submit</button>',
                                 ' or ',
@@ -116,12 +119,19 @@
                         url = self.$form.find('[name="url"]').val() || '',
                         $image = self.$form.find('[name="photo"]');
 
-                    /*var doAutoName = self.options.doAutoName;*/
+                    // @todo not allowed in valid url
+                    var isValidUrl = function(s) {
+                        var regexp = /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/;
+                        return regexp.test(s);    
+                    };
 
-                    // @todo validate form
-                    if (!url.length) {
-                        console.log('error: URL is empty');
-                        return;
+                    if (true !== isValidUrl(url)) {
+                        var errorMsg = 'Error: Invalid URL';
+                        $(this).parents('form').find('.form-group.error')
+                            .removeClass('hidden')
+                            .find('> label')
+                            .text(errorMsg);
+                        return false;
                     };
 
                     var getFileName = function(path) {
@@ -135,14 +145,7 @@
                     var filename = $image.val() || '';
                     if (filename.length) {
                         pos.$image = $image;
-                        if (!name.length) {
-                            /*doAutoName && (name = getFileName(filename));*/
-                        };
                     };
-
-                    if (!name.length) {
-                        /*doAutoName && (name = url.split('/').pop());*/
-                    }
 
                     pos.name = name;
                     pos.url = url;

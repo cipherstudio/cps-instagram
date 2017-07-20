@@ -357,6 +357,10 @@ hr {
     cursor: default;
     padding: 10px;
     font-size: .9em;
+
+    .error {
+        color: red;
+    }
 }
 .photo-tags-form-wrapper form{
 
@@ -481,7 +485,7 @@ hr {
     }
 }
 
-/* portrait */
+/* portrait and landscape */
 @media only screen and (max-width: 767px) and (min-width: 1px){
 
     /* app */
