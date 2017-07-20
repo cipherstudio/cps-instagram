@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use TCG\Voyager\Facades\Voyager;
 
+use Illuminate\Support\Facades\Storage;
+
 class InstagramMedia extends Model
 {
 
@@ -270,4 +272,62 @@ class InstagramMedia extends Model
 
         return $data;
     }
+
+    protected function _deleteFileIfExists($path)
+    {
+        if (Storage::disk(config('voyager.storage.disk'))->exists($path)) {
+            Storage::disk(config('voyager.storage.disk'))->delete($path);
+        }
+    }
+
+    // @see BREAD destroy
+    protected function _deletePoints()
+    {
+        $points = $this->getPoints();
+        foreach ($points as $point) {
+            $id = $point['id'];
+
+            $slug = 'instagram-points';
+            $dataType = Voyager::model('DataType')->where('slug', '=', $slug)->first();
+
+            $data = call_user_func([$dataType->model_name, 'findOrFail'], $id);
+
+            // Delete Translations, if present
+            if (is_bread_translatable($data)) {
+                $data->deleteAttributeTranslations($data->getTranslatableAttributes());
+            }
+
+            foreach ($dataType->deleteRows as $row) {
+                if ($row->type == 'image') {
+                    $this->_deleteFileIfExists('/uploads/'.$data->{$row->field});
+
+                    $options = json_decode($row->details);
+
+                    if (isset($options->thumbnails)) {
+                        foreach ($options->thumbnails as $thumbnail) {
+                            $ext = explode('.', $data->{$row->field});
+                            $extension = '.'.$ext[count($ext) - 1];
+
+                            $path = str_replace($extension, '', $data->{$row->field});
+
+                            $thumb_name = $thumbnail->name;
+
+                            $this->_deleteFileIfExists('/uploads/'.$path.'-'.$thumb_name.$extension);
+                        }
+                    }
+                }
+            }
+
+            $data->destroy($id);
+        }
+    }
+
+    public function delete()
+    {
+        $this->_deletePoints();
+        return parent::delete();
+    }
+
+
+
 }
