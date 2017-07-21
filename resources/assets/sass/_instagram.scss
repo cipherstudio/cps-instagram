@@ -335,6 +335,10 @@ hr {
     /*line-height: 30px;*/
     text-align:center;
     padding-top:8px;
+
+    &:hover {
+        text-decoration: none;
+    }
 }
 .photo-tags-preview-item .photo-tags-delete {
     width: 16px;
@@ -360,6 +364,7 @@ hr {
 }
 .photo-tags-name-text {
     min-height: 14px;
+    cursor: pointer;
 }
 
 .photo-tags-form-wrapper {
