@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use TCG\Voyager\Facades\Voyager;
 
-class IndexController extends \TCG\Voyager\Http\Controllers\VoyagerBreadController
+class IndexController extends \App\Http\Controllers\Controller
 {
 
     /**
@@ -20,12 +20,18 @@ class IndexController extends \TCG\Voyager\Http\Controllers\VoyagerBreadControll
         $this->media->init();
     }
 
-    public function index(Request $request)
+    public function index(Request $request, $id = null)
     {
         $syncUrl = route('instagram.index.load');
         $syncData = $this->media->getSyncData();
 
-        return view('instagram.index.index', compact('syncUrl', 'syncData'));
+        // @todo get exists data
+        $popupData = array();
+        if ($id) {
+            $popupData = $this->media->getOneSyncData($id);
+        }
+
+        return view('instagram.index.index', compact('syncUrl', 'syncData', 'popupData'));
     }
 
     public function load(Request $request)

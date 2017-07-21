@@ -116,8 +116,8 @@
         var items = [];
         $.each(instagram.getSelectedItems(), function(key, value) {
             items.push({
-                url: instagram.getUrl(value),
-                hd_url: instagram.getHdUrl(value),
+                // url: instagram.getUrl(value),
+                // hd_url: instagram.getHdUrl(value),
                 data: value
             });
         });

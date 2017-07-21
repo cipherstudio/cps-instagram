@@ -14,9 +14,12 @@
 // home
 Route::get('/', ['uses' => 'Instagram\IndexController@index', 'as' => 'instagram.index.index']);
 Route::get('/load', ['uses' => 'Instagram\IndexController@load', 'as' => 'instagram.index.load']);
+Route::get('/items/{id}', ['uses' => 'Instagram\IndexController@index', 'as' => 'instagram.index.index']);
 
 // oauth
 Route::get('instagram/oauth', ['uses' => 'Instagram\SyncController@oauth', 'as' => 'instagram.sync.oauth']);
+
+
 
 // remove frontend auth
 //Auth::routes();
@@ -39,7 +42,6 @@ Route::group(['prefix' => 'admin'], function () {
         Route::get('instagram-media/points/{id}', ['uses' => 'Instagram\PointController@points', 'as' => 'instagram.point.points']);
         Route::post('instagram-point/save-points', ['uses' => 'Instagram\PointController@savePoints', 'as' => 'instagram.point.save-points']);
 
-        // frontend
 
     });
 

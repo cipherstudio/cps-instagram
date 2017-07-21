@@ -13,7 +13,8 @@
     $(function() {
         vm.$refs.instagram.init({
             syncUrl: '{{ $syncUrl }}',
-            syncData: {!! json_encode($syncData) !!}
+            syncData: {!! json_encode($syncData) !!},
+            popupData: {!! json_encode($popupData) !!}
         });
     });
 </script>

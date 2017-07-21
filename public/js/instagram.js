@@ -9969,6 +9969,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             // data
             syncUrl: '',
             syncData: {},
+            popupData: {},
             items: [],
 
             column: 3,
@@ -10016,13 +10017,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             if ($.type(item.points) == 'undefined') {
                 url = item.images.standard_resolution.url;
             } else {
-                var points = item.points || [];
-                if (points.length == 1) {
-                    url = points[0].url;
-                } else {
-                    url = window.location.origin + '/items/' + item.id;
-                };
-            }
+                url = item.url;
+            };
 
             return url;
         },
@@ -10040,7 +10036,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             };
 
             if (this.popup) {
-                this.setupPopup();
+                this.setupPopup(this.popupData);
             };
         },
 
@@ -10325,18 +10321,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             return self.$popup;
         },
 
-        showPopup: function showPopup($el) {
-            var self = this,
-                id = $el.data('id').split('-').pop(),
-                item = self.getItem(id);
+        showPopup: function showPopup(item) {
+            var self = this;
 
             // @fixed
             var doAutoName = false;
-
-            if (item.points.length == 1) {
-                window.location.href = $el.find('a').attr('href');
-                return;
-            };
 
             var $popup = self.getPopup(),
                 $photoViewer = $('.multiproduct-photo-container', $popup),
@@ -10428,15 +10417,35 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 image.src = url;
             });
 
+            $popup.one('hidden.bs.modal', function () {
+                history.pushState(null, null, window.location.origin);
+            });
+
+            history.pushState(null, null, item.url);
             $popup.modal('show');
         },
 
-        setupPopup: function setupPopup() {
+        setupPopup: function setupPopup(popupData) {
             var self = this;
             $(this.$el).on('click', '.photo-card', function (e) {
                 e.preventDefault();
-                self.showPopup($(this));
+
+                var $el = $(this),
+                    id = $el.data('id').split('-').pop(),
+                    item = self.getItem(id);
+
+                if (item.points.length == 1) {
+                    window.location.href = $el.find('a').attr('href');
+                    return;
+                };
+
+                self.showPopup(item);
             });
+
+            if ($.type(popupData.id) != 'undefined') {
+                console.log(popupData, 'popupData');
+                self.showPopup(popupData);
+            };
         },
 
         selecetAll: function selecetAll() {

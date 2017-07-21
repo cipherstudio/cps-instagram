@@ -50,6 +50,7 @@
                 // data
                 syncUrl: '',
                 syncData: {},
+                popupData: {},
                 items: [],
 
                 column: 3,
@@ -99,13 +100,8 @@
                 if ($.type(item.points) == 'undefined') {
                     url = item.images.standard_resolution.url;
                 } else {
-                    var points = item.points || [];
-                    if (points.length == 1) {
-                        url = points[0].url
-                    } else {
-                        url = window.location.origin + '/items/' + item.id;
-                    };
-                }
+                    url = item.url;
+                };
 
                 return url;
             },
@@ -123,7 +119,7 @@
                 };
 
                 if (this.popup) {
-                    this.setupPopup();
+                    this.setupPopup(this.popupData);
                 };
             },
 
@@ -464,19 +460,12 @@
                 return self.$popup;
             },
 
-            showPopup: function($el) {
-                var self = this,
-                    id = $el.data('id').split('-').pop(),
-                    item = self.getItem(id);
+            showPopup: function(item) {
+                var self = this;
 
                 // @fixed
                 var doAutoName = false;
 
-                if (item.points.length == 1) {
-                    window.location.href = $el.find('a').attr('href');
-                    return;
-                };
-                    
                 var $popup = self.getPopup(),
                     $photoViewer = $('.multiproduct-photo-container', $popup),
                     $tagWrapper = $('.squared-product-details-image-div', $popup),
@@ -585,15 +574,35 @@
                     image.src = url; 
                 });
 
+                $popup.one('hidden.bs.modal', function() {
+                    history.pushState(null, null, window.location.origin);
+                });
+
+                history.pushState(null, null, item.url);
                 $popup.modal('show');
             },
 
-            setupPopup: function() {
+            setupPopup: function(popupData) {
                 var self = this;
                 $(this.$el).on('click', '.photo-card', function(e) {
                     e.preventDefault();
-                    self.showPopup($(this));
+
+                    var $el = $(this),
+                        id = $el.data('id').split('-').pop(),
+                        item = self.getItem(id);
+
+                    if (item.points.length == 1) {
+                        window.location.href = $el.find('a').attr('href');
+                        return;
+                    };
+
+                    self.showPopup(item);
                 });
+
+                if ($.type(popupData.id) != 'undefined') {
+                    console.log(popupData, 'popupData');
+                    self.showPopup(popupData);
+                };
             },
 
             selecetAll: function() {

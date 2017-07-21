@@ -111,6 +111,10 @@ class InstagramMedia extends Model
             $mediaId = $rows[$key]['id'];
             if (isset($map[$mediaId])) {
                 $rows[$key]['points'] = $map[$mediaId];
+
+                if (count($rows[$key]['points']) == 1) {
+                    $rows[$key]['url'] = $rows[$key]['points'][0]['url'];
+                }
             }
         }
     }
@@ -121,6 +125,7 @@ class InstagramMedia extends Model
         $data = array(
             'id' => $row->id,
             'sort' => $row->sort,
+            'url' => url('/items/' . $row->uid),
             'images' => array(
                 'thumbnail' => array(
                     'url' => app('voyager')->image($row->thumbnail_url),
@@ -135,8 +140,6 @@ class InstagramMedia extends Model
             )
         );
 
-        //item.images.standard_resolution.url
-
         return $data;
     }
 
@@ -150,6 +153,23 @@ class InstagramMedia extends Model
         }
 
         return $this->request($url);
+    }
+
+    public function getOneSyncData($id)
+    {
+        $query = DB::table('instagram_media');
+        $row = $query->where('uid', $id)
+            ->limit(1)
+            ->first();
+
+        if (!$row) {
+            return array();
+        }
+
+        $data = array('data' => array($this->transformRow($row)));
+        $this->applyDataPoints($data['data']);
+        
+        return $data['data'][0];
     }
 
     protected function _queryBuilderWhere($query)
@@ -194,7 +214,6 @@ class InstagramMedia extends Model
         // params
         $count = @$params['count'] ?: 10;
         $maxId = @$params['max_id'];
-
 
         // query
         $query = DB::table('instagram_media');

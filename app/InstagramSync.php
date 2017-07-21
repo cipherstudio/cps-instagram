@@ -238,17 +238,15 @@ class InstagramSync extends Model
 
         settype($item['data'], 'array');
 
-        // zf_dump($item, '$item');
-
         $input = array(
             'uid'              => $item['data']['id'],
             'name'             => '', // use file name for this case
             'caption'          => @$item['data']['caption']['text'],
             'type'             => $item['data']['type'],
-            'width'            => '1080',
-            'height'           => '1080',
-            'thumbnail_width'  => $item['data']['images']['standard_resolution']['width'],
-            'thumbnail_height' => $item['data']['images']['standard_resolution']['height'],
+            'width'            => $item['data']['images']['standard_resolution']['width'],
+            'height'           => $item['data']['images']['standard_resolution']['height'],
+            'thumbnail_width'  => $item['data']['images']['thumbnail']['width'],
+            'thumbnail_height' => $item['data']['images']['thumbnail']['height'],
             'data'             => json_encode($item['data']),
             'enabled'          => 'off',
             'count'            => 0,
@@ -256,6 +254,10 @@ class InstagramSync extends Model
             'created_at'       => $now,
             'updated_at'       => $now
         );
+
+        // @todo deprecated url and hd_url
+        $item['url'] = $item['data']['images']['thumbnail']['url'];
+        $item['hd_url'] = $item['data']['images']['standard_resolution']['url'];
 
         foreach ($uploadedFileMap as $targetKey => $sourceKey) {
             if (isset($item[$sourceKey]) && !empty($item[$sourceKey])) {
