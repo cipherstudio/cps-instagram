@@ -9,3 +9,6 @@ Homestead.json
 Homestead.yaml
 #npm-debug.log
 #.env
+
+/storage/app/public/instagram-media
+/storage/app/public/instagram-points

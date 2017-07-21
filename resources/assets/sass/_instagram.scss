@@ -1,4 +1,13 @@
 /* global */
+body {
+    background-color: #fafafa;
+}
+.navbar {
+    min-height: $navbar-height;
+}
+.navbar-default {
+    border-color: $border-color;
+}
 
 /* app */
 
@@ -6,8 +15,10 @@
     footer {
         padding: 8px 0;
         text-align: right;
-        font-size: .9em;
-        border-top: 1px solid #ccc;
+        font-size: .8em;
+        border-top: 1px solid $border-color;
+        color: #b7b7b7;
+        font-weight: 400;
     }
 }
 
@@ -45,28 +56,30 @@
     margin: 0 3px 0 4px;
     background-color: #e0e0e0;
     border-radius: 50%;
-    height: 28px;
-    width: 28px;
+    height: $logo-height;
+    width: $logo-width;
 }
 .store-name {
-    left: 8px;
+    left: 18px;
     color: #060606;
-    font-size: 15px;
-    font-weight: 700;
+    font-size: 1.4em;
+    line-height: 38px;
+    font-weight: 600;
     position: relative;
     border-left: 1px solid #8c8c8c;
-    padding-left: 12px;
+    padding: 0 0 0 24px;
     display: inline-block;
-    height: 28px;
+    height: 38px;
+    top: 2px;
 }
 
 .desktop .ig-info-button {
     position: relative;
-    height: 49px;
+    height: 38px;
     display: inline-block;
     padding-right: 18px;
     border-top: none;
-    top: 10px;
+    top: 16px;
 }
 
 
@@ -78,7 +91,7 @@ hr {
     display: block;
     height: 1px;
     border: 0;
-    border-top: 1px solid #ccc;
+    border-top: 1px solid $border-color;
     margin: 1em 0;
     padding: 0;
 }
@@ -118,9 +131,10 @@ hr {
 .subtitle {
     margin: 0;
     color: #7e7e7e;
-    padding: 18px 0 6px;
-    border-bottom: 1px solid #ccc;
+    padding: 18px 0 8px;
+    border-bottom: 1px solid $border-color;
     margin-bottom: 6px;
+    margin-top: 8px;
 }
 
 .subtitle hr {
@@ -244,7 +258,7 @@ hr {
 
 @media only screen and (min-width: 1224px) and (orientation: landscape) {
     .main-container .content-container {
-        padding-top: 58px;
+        padding-top: $container-padding-top;
     }
 }
 
@@ -372,6 +386,7 @@ hr {
 
 /* CPS Override */
 .cps.modal {
+    color: #909090;
     .modal-header {
         height: 87px;
         margin-right: 12px;
@@ -386,9 +401,10 @@ hr {
     }
     .modal-content {
         box-shadow: inherit;
+        border-radius: inherit;
     }
     .squared-photo-div {
-        border: 1px solid $cps-border-color;
+        //border: 1px solid $border-color;
     }
     .photo-tags-preview-item .photo-tags-tag {
         left: 2px;
@@ -396,7 +412,7 @@ hr {
     }
     .photo-tags-tag {
         box-shadow: inherit;
-        border: 1px solid $cps-border-color;
+        border: 1px solid $border-color;
     }
 }
 
@@ -504,10 +520,9 @@ hr {
         height: 64px;
     }
     .store-name {
-        font-size: 2em;
-        height: 2em;
-        line-height: 2em;
         border-left: 1px solid transparent;
+        left: 6px;
+        padding-left: 0;
     }
     .app-container footer {
         text-align: center;
@@ -519,8 +534,16 @@ hr {
         .menu-row {
             display: block;
             height: 3.6em;
-            border-bottom: 1px solid #ccc;
-            padding: 8px 30px;
+            border-bottom: 1px solid $border-color;
+            padding: 8px 15px;
+
+            &.footer {
+                text-align: center;
+                padding: 0 15px;
+                border: none;
+                height: initial;
+                font-size: .7em;
+            }
 
             .close {
                 float:left;
@@ -532,6 +555,7 @@ hr {
                 font-size: 1.2em;
                 line-height: 1.2em;
                 margin-top: .55em;
+                font-weight: 400;
             }
         }
     }
@@ -546,7 +570,7 @@ hr {
         border-radius: inherit;
     }
     .modal-title {
-
+        margin: 0;
     }
     .cps.modal .modal-header {
         position: inherit;
@@ -554,7 +578,8 @@ hr {
         bottom: inherit;
         left: inherit;
         right: inherit;
-        height: 72px;
+        height: 36px;
+        padding: 0 15px;
 
         .close {
             display: none;

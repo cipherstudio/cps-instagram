@@ -13,16 +13,10 @@
                     <div class="photo-card-box">
                         <div class="photo-card-box-inner">
                             <div class="video-wrapper"></div>
-                            <span>
-                                <span>
-                                    <span>
-                                        <a :href="photoLink(item)"> 
-                                            <div class="squared-photo-div" :style="{ 'background-image': 'url(' + getHdUrl(item) + ')' }">
-                                            </div>
-                                        </a>
-                                    </span>
-                                </span>
-                            </span>
+                                <a :href="photoLink(item)"> 
+                                    <div class="squared-photo-div" :style="{ 'background-image': 'url(' + getHdUrl(item) + ')' }">
+                                    </div>
+                                </a>
                         </div>
                     </div>
                 </div>
@@ -414,7 +408,7 @@
                                                 '<div class="row menu-row">',
                                                     '<button type="button" class="close" data-dismiss="modal" aria-label="Back"><span',
                                                         ' aria-hidden="true">&lt;</span></button>',
-                                                    '<label>Store</label>',
+                                                    '<label data-dismiss="modal">Store</label>',
                                                 '</div>',
 
                                                 '<div class="row no-inner-gutter container-row">',
@@ -440,6 +434,12 @@
                                                     '</div>',
 
                                                 '</div>',
+
+                                                '<div class="row menu-row footer">',
+                                                    '',
+                                                '</div>',  
+
+
                                             '</div>',
                                         '</div>',
 
@@ -451,7 +451,9 @@
 
                     ].join('');
 
-                    self.$popup = $(tpl).appendTo('body');
+                    self.$popup = $(tpl).appendTo('body')
+                        .find('.footer').text( $('.app-container footer').text() ).end();
+
                     self.$popup.on("hidden.bs.modal", function () {
                         $('.modal-backdrop').remove();
                     });
@@ -478,32 +480,61 @@
                 $productContainer.html('');
                 $tagContainer.html('');
 
-                $popup.one('shown.bs.modal', function () {
 
+                var image = new Image();
+                var procContainer = function() {
                     // calc photo dimension
                     var maxWidth = $photoViewer.outerWidth(),
                         maxHeight = $productList.outerHeight();
 
+                    var width = image.width;
+                    var height = image.height;
+                    if (width == height) {
+                        $tagContainer.width(maxWidth).height(maxWidth);
+                    } else if (width > height) {
+                        $tagContainer.width(maxWidth).height( (maxWidth * height / width).toFixed(2) );
+                    } else {
+                        $tagContainer.width( (maxHeight * width / height).toFixed(2) ).height(maxHeight);
+                    };
+
+                    $tagContainer.css({
+                        marginTop: ($tagContainer.height() / 2 * -1).toFixed(2) + 'px',
+                        marginLeft: ($tagContainer.width() / 2 * -1).toFixed(2) + 'px'
+                    });
+                };
+                var procTagPos = function($el, pos) {
+                    var width = image.width;
+                    var height = image.height;
+                    var gap = parseInt(Math.max($el.outerWidth(), $el.outerHeight()) / 2);
+                    
+                    // console.log('w: ' + $tagContainer.width() + ', h: ' + $tagContainer.height());
+                    $el.css({
+                        left: parseInt($tagContainer.width() * pos.posX / width) - gap,
+                        top: parseInt($tagContainer.height() * pos.posY / height) - gap,
+                    })
+                };
+                var onResize = function() {
+                    // console.log('resize');
+                    try {
+                        procContainer();
+                        $tagContainer.find('.photo-tags-tag').each(function() {
+                            var $el = $(this),
+                                pos = $el.data('pos');
+                            procTagPos($el, pos);
+                        });
+                    } catch (e) {
+                        console.log(e, 'e');
+                    };
+                };
+
+                $popup.one('shown.bs.modal', function () {
+
                     var url = item.images.standard_resolution.url;
 
                     // @todo read width and height from server response
-                    var image = new Image();
+                    
                     image.onload = function(evt) {
-                        var width = this.width;
-                        var height = this.height;
-
-                        if (width == height) {
-                            $tagContainer.width(maxWidth).height(maxWidth);
-                        } else if (width > height) {
-                            $tagContainer.width(maxWidth).height( (maxWidth * height / width).toFixed(2) );
-                        } else {
-                            $tagContainer.width( (maxHeight * width / height).toFixed(2) ).height(maxHeight);
-                        };
-
-                        $tagContainer.css({
-                            marginTop: ($tagContainer.height() / 2 * -1).toFixed(2) + 'px',
-                            marginLeft: ($tagContainer.width() / 2 * -1).toFixed(2) + 'px'
-                        });
+                        procContainer();
 
                         // set image
                         $tagWrapper.css('background-image', 'url(' + url + ')');
@@ -519,24 +550,13 @@
 
                         // @todo add tags
                         $.each(item.points, function(key, pos) {
-                            // console.log(pos, 'pos');
-                            // console.log('width: ' + width + ', height: ' + height);
-                            // console.log('posX: ' + pos.posX + ', posY: ' + pos.posY);
-
                             var $el = $([
                                 '<div class="photo-tags-tag">',
                                     '<span>' + pos.number + '</span>',
                                 '</div>'
-                            ].join('')).appendTo($tagContainer);
+                            ].join('')).data('pos', pos).appendTo($tagContainer);
 
-                            // console.log($el.outerWidth(), '$el.outerWidth()');
-                            // console.log($el.outerHeight(), '$el.outerHeight()');
-
-                            var gap = parseInt(Math.max($el.outerWidth(), $el.outerHeight()) / 2);
-                            $el.css({
-                                left: parseInt($tagContainer.width() * pos.posX / width) - gap,
-                                top: parseInt($tagContainer.height() * pos.posY / height) - gap,
-                            })
+                            procTagPos($el, pos);
 
                             applyOnClick($el, pos);
                         });
@@ -572,10 +592,13 @@
                     };
 
                     image.src = url; 
+
+                    $(window).bind('resize', onResize);
                 });
 
                 $popup.one('hidden.bs.modal', function() {
                     history.pushState(null, null, window.location.origin);
+                    $(window).unbind('resize', onResize);
                 });
 
                 history.pushState(null, null, item.url);
@@ -600,7 +623,6 @@
                 });
 
                 if ($.type(popupData.id) != 'undefined') {
-                    console.log(popupData, 'popupData');
                     self.showPopup(popupData);
                 };
             },
