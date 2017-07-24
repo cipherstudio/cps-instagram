@@ -178,6 +178,10 @@ class InstagramSync extends Model
                 'count' => $this->getItemCountPerPage()
             ));
 
+            // @todo get public_content review?
+            // $userId = '11692348'; // rcoco66
+            // $userId = '209201990'; // cps
+
             $url = $this->getApiUrl() . '/users/' . $userId . '/media/recent' . '?' . $queryString;
         }
 

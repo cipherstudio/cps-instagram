@@ -38,11 +38,13 @@ return [
     'sort_dir' => 'DESC',
 
     // pagination
-    'page_size' => 12,
-    'sync_page_size' => 20,
+    'page_size' => 12, // frontend
+    'sync_page_size' => 18, // backend
 
     // sync
-    'allow_duplicates' => false
+    'allow_duplicates' => false,
 
+    'sync_advanced' => true,
+    'sync_interval_default' => '1 week'
 ];
 

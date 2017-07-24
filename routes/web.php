@@ -38,6 +38,9 @@ Route::group(['prefix' => 'admin'], function () {
         Route::get('instagram-media-sync/load', ['uses' => 'Instagram\SyncController@load', 'as' => 'instagram.sync.load']);
         Route::post('instagram-media-sync/import', ['uses' => 'Instagram\SyncController@import', 'as' => 'instagram.sync.import']);
 
+        // auto sync
+        Route::post('instagram-media-sync/sync', ['uses' => 'Instagram\SyncController@sync', 'as' => 'instagram.sync.sync']);
+
         // points
         Route::get('instagram-media/points/{id}', ['uses' => 'Instagram\PointController@points', 'as' => 'instagram.point.points']);
         Route::post('instagram-point/save-points', ['uses' => 'Instagram\PointController@savePoints', 'as' => 'instagram.point.save-points']);

@@ -6,18 +6,17 @@
     <h1 class="page-title">
         <i class="voyager-anchor"></i> Instagram Media Points
 
-        <form method="POST" action="{{ route('instagram.sync.import') }}" style="display:inline;float:right">
+        <a href="{{ route('voyager.'.$dataType->slug.'.index') }}" class="btn btn-warning" style="float:right;margin-left:15px">
+            <span class="glyphicon glyphicon-list"></span>&nbsp;
+            Return to List
+        </a>  
+        <form method="POST" action="{{ route('instagram.sync.import') }}">
             {{ csrf_field() }}
             <input type="hidden" name="id" value="{{ $id }}" />
             <a href="javascript:void(0);" class="btn btn-success instagram-point-points">
                 <i class="voyager-cloud-download"></i> Save
             </a>
         </form>
-
-        <a href="{{ route('voyager.'.$dataType->slug.'.index') }}" class="btn btn-warning">
-            <span class="glyphicon glyphicon-list"></span>&nbsp;
-            Return to List
-        </a>  
 
     </h1>
 @stop
@@ -72,7 +71,14 @@
     .photo-tags-wrapper{
         border: 10px solid #f3f7f9;
     }
-
+    .page-title form{
+        float:right;
+        margin-top:1px;
+    }
+    .page-title form .btn {
+        margin-right: 15px;
+        min-width: 95px;
+    }
 </style>
 @stop
 

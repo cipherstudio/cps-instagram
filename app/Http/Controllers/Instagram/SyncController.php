@@ -36,7 +36,7 @@ class SyncController extends \TCG\Voyager\Http\Controllers\VoyagerBreadControlle
 
     public function index(Request $request)
     {
-        // @todo if no access_token from IG go to oauth otherwise render sync process
+        // if no access_token from IG go to oauth otherwise render sync process
 
         $sync = $this->sync;
         $sync->init();
@@ -48,7 +48,7 @@ class SyncController extends \TCG\Voyager\Http\Controllers\VoyagerBreadControlle
         $syncUrl = route('instagram.sync.load');
         $syncData = $sync->getSyncData();
 
-        // invalid token
+        // invalid token after :getSyncData()
         if ($sync->isTokenError()) {
             $sync->clearAccessTokenUrl();
             return redirect($sync->getAccessTokenUrl());
@@ -96,8 +96,12 @@ class SyncController extends \TCG\Voyager\Http\Controllers\VoyagerBreadControlle
         // Check if BREAD is Translatable
         $isModelTranslatable = is_bread_translatable($model);
 
+        // @fixed
+        $advanced = config('instagram.sync_advanced');
+        $intervalDefault = config('instagram.sync_interval_default');
+
         $view = 'instagram.sync.index';
-        return view($view,  compact('dataType', 'dataTypeContent', 'isModelTranslatable', 'syncUrl', 'syncData'));
+        return view($view,  compact('dataType', 'dataTypeContent', 'isModelTranslatable', 'syncUrl', 'syncData', 'advanced', 'intervalDefault'));
     }
 
     public function load(Request $request)
@@ -128,7 +132,8 @@ class SyncController extends \TCG\Voyager\Http\Controllers\VoyagerBreadControlle
 
         $media = array();
         foreach ($items as $item) {
-            $newRequest = clone($request);
+            // $newRequest = clone($request);
+            $newRequest = new Request();
 
             $data = $this->sync->createInput($newRequest, $item, new $dataType->model_name());
             $data = $this->insertUpdateData($newRequest, $slug, $dataType->addRows, $data);
@@ -136,6 +141,71 @@ class SyncController extends \TCG\Voyager\Http\Controllers\VoyagerBreadControlle
         }
 
         return response()->json($media);
+    }
+
+    public function sync(Request $request)
+    {
+        $interval = $request->input('interval');
+        $url = (string) $request->input('url');
+
+        // check times
+        $format = 'Y-m-d H:i:s';
+        $today = date($format);
+        $end = date('Y-m-d 23:59:59', strtotime($today));
+        $start = date('Y-m-d 00:00:00', strtotime($end . ' - ' . $interval));
+        
+        // sync process
+        $sync = $this->sync;
+        $sync->init();
+
+        if (!$sync->hasAccessToken()) {
+            return redirect($sync->getAccessTokenUrl());
+        }
+
+        $syncUrl = route('instagram.sync.load');
+        $syncData = $sync->getSyncData($url);
+
+        // invalid token after :getSyncData()
+        if ($sync->isTokenError()) {
+            $sync->clearAccessTokenUrl();
+            return redirect($sync->getAccessTokenUrl());
+        }
+
+        if ($syncData['data']) {
+            $allowDuplicated = config('instagram.allow_duplicates');
+
+            $syncData['added'] = array();
+            $items = array();
+
+            $targetDate = strtotime($start);
+            foreach ($syncData['data'] as $data) {
+                // filter media type
+                if ($data['type'] != 'image') {
+                    continue;
+                }
+
+                // DO NOT duplicated import
+                if (!$allowDuplicated && ($data['exists'])) {
+                    continue;
+                }
+
+                $dataDate = date($format, $data['created_time']);
+
+                if (strtotime($dataDate) >= $targetDate) {
+                    $syncData['added'][] = $data;
+                    $items[] = array('data' => $data);
+                }
+            }
+
+            if ($items) {
+                unset($syncData['data']);
+                $input = array('items' => $items);
+                $request->replace($input);
+                $this->import($request);
+            }
+        }
+
+        return response()->json($syncData);
     }
    
 }
