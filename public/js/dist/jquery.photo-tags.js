@@ -8,8 +8,9 @@
             prefix: 'photo-tags',
             disabled: false,
             readonly: false,
+            editable: true,
             previewContainer: '',
-            size: 30,
+            size: 28,
             radius: '50%',
             backgroundColor: '#fff'
 
@@ -51,6 +52,14 @@
                 };
             },
 
+            getGap: function() {
+                var self = this,
+                    size = self.options.size,
+                    gap = parseInt(size / 2);
+
+                return gap;
+            },
+
             onClick: function(e) {
                 var offset = $el.offset(),
                     pos = {
@@ -70,8 +79,7 @@
 
             createForm: function(pos) {
                 var self = this,
-                    size = self.options.size,
-                    gap = parseInt(size / 2);
+                    gap = this.getGap();
 
                 // console.log('createForm()');
                 // console.log(pos, 'pos');
@@ -167,10 +175,32 @@
             },
 
             createTag: function(pos) {
+                var self = this;
                 var $tag = $('<div class="' + this.prefix + '-tag"><span>' + pos.number + '</span></div>')
                     .appendTo(this.$wrapper);
 
                 this.updateTag(pos, $tag);
+
+                if (this.options.editable) {
+                    var cursor = 'move';
+                    $tag.draggable({
+                        containment: this.$wrapper
+                    })
+                        .css('cursor', cursor)
+                        .find('>span')
+                            .css('cursor', cursor)
+                        .end()
+                        .on('dragstop', function(event, ui) {
+                            var $el = $(this)
+                                gap = self.getGap();
+
+                            var pos = $el.data('pos');
+                            pos.posX = parseInt($el.css('left')) + gap;
+                            pos.posY = parseInt($el.css('top')) + gap;
+
+                            self.updateTag(pos, $el);
+                        });
+                };
 
                 if (this.$previewContainer) {
                     $tag.$preview = this.createPreview(pos);
@@ -181,8 +211,7 @@
 
             updateTag: function(pos, $tag) {
                 var self = this,
-                    size = self.options.size,
-                    gap = parseInt(size / 2);
+                    gap = this.getGap();
 
                 $tag
                     .find('> span:first')

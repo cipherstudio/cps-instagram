@@ -507,6 +507,7 @@
                     var height = image.height;
                     var gap = parseInt(Math.max($el.outerWidth(), $el.outerHeight()) / 2);
                     
+                    // console.log(gap);
                     // console.log('w: ' + $tagContainer.width() + ', h: ' + $tagContainer.height());
                     $el.css({
                         left: parseInt($tagContainer.width() * pos.posX / width) - gap,

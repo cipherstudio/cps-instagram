@@ -279,6 +279,8 @@ hr {
 .photo-tags-wrapper {
     z-index: 5;
     position: relative;
+    display: inline-block;
+    
 
     user-select: none;
     -moz-user-select: none;
@@ -296,9 +298,9 @@ hr {
     border-radius: 100px;
     padding-top: 2px;
 
-    -webkit-box-shadow: 0 0 5px 0 #3e3e3e;
-    -moz-box-shadow: 0 0 5px 0 #3e3e3e;
-    box-shadow: 0 0 5px 0 #3e3e3e;
+    // -webkit-box-shadow: 0 0 5px 0 #3e3e3e;
+    // -moz-box-shadow: 0 0 5px 0 #3e3e3e;
+    // box-shadow: 0 0 5px 0 #3e3e3e;
 }
 .photo-tags-tag > span{
     display: inline-block;
@@ -321,8 +323,9 @@ hr {
 }
 .photo-tags-preview-item .photo-tags-tag {
     position: absolute;
-    top: 0;
-    left: 0;
+    top: 2px;
+    left: 2px;
+    border: 1px solid $border-color;
 }
 .photo-tags-preview-item .photo-tags-name {
     font-weight: 700;
@@ -412,12 +415,12 @@ hr {
         //border: 1px solid $border-color;
     }
     .photo-tags-preview-item .photo-tags-tag {
-        left: 2px;
-        top: 2px;
+        // left: 2px;
+        // top: 2px;
     }
     .photo-tags-tag {
-        box-shadow: inherit;
-        border: 1px solid $border-color;
+        // box-shadow: inherit;
+        // border: 1px solid $border-color;
     }
 }
 

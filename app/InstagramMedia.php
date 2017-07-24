@@ -12,9 +12,18 @@ class InstagramMedia extends Model
 {
 
     /**
+     * The number of models to return for pagination.
+     *
+     * @var int
+     */
+    protected $perPage = 20;
+
+    /**
+     * Used for `frontend` page
+     *
      * @var integer $itemCountPerPage
      */
-    protected $itemCountPerPage = 10;
+    protected $itemCountPerPage = 12;
 
     public function init()
     {

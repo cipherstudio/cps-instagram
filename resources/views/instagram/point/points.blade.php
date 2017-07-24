@@ -31,12 +31,12 @@
         </div>
         <div class="panel-body" style="padding-top:0;">
 
-
-            <div class="row">
-                <div class="col-sm-8" style="background:#f3f7f9;padding:8px">
-                    <img class="photo-tags" src="{{ Voyager::image($dataTypeContent->url) }}">
+            <!-- Standard Resolution is 640px -->
+            <div class="row" style="margin: auto;">
+                <div class="col-sm-8" style="padding:0">
+                    <img class="photo-tags" data-src="{{ Voyager::image($dataTypeContent->url) }}">
                 </div>
-                <div class="col-sm-4">
+                <div class="col-sm-4" style="padding:0">
 
                     <form class="" role="form" method="POST" action="" enctype="multipart/form-data">
 
@@ -69,7 +69,9 @@
 <link rel="stylesheet" type="text/css" href="{{ URL::asset('css/instagram.css') }}">
 
 <style>
-
+    .photo-tags-wrapper{
+        border: 10px solid #f3f7f9;
+    }
 
 </style>
 @stop
@@ -80,92 +82,100 @@
     // console.log('points...');
     var points = <?php echo json_encode($points);?>;
 
-    var photoTags = $('.photo-tags').photoTags().data('photoTags');
-    $.each(points, function(key, point) {
-        point.$image = point.imageUrl;
-        photoTags.createTag(point);
-    });
+    var $el = $('.photo-tags');
+    var image = new $('.photo-tags')[0];
+    image.onload = function(evt) {
 
-    $('.instagram-point-points').click(function(e) {
-        e.preventDefault();
-
-        var $items = $('.photo-tags-preview-item');
-
-        if (!$items.length) {
-            // do not anythig
-            // edit can empty mode for clear all
+        if (this.width == 640 && this.height == 640) {
+            $el.parents('.row:first').css('max-width', '1080px');
         };
 
-        var mediaId = $(this).siblings('[name="id"]').val();
-        if (!mediaId.length) {
-            console.log('error: mediaId is empty');
-            return;
-        }
+        var photoTags = $el.photoTags().data('photoTags');
+        $.each(points, function(key, point) {
+            point.$image = point.imageUrl;
+            photoTags.createTag(point);
+        });
 
-        var data = new FormData();
+        $('.instagram-point-points').click(function(e) {
+            e.preventDefault();
 
-        data.append('mediaId', mediaId);
+            var $items = $('.photo-tags-preview-item');
 
-        $items.each(function(key, $preview) {
-            var pos = $(this).data('pos');
-
-            // @todo files is option
-            try {
-                if ($.type(pos.$image) == 'object') {
-                    var file = pos.$image[0].files[0];
-                    data.append(key, file);
-                };
-            } catch (e) {
-                console.log(e, 'error');
+            if (!$items.length) {
+                // do not anythig
+                // edit can empty mode for clear all
             };
 
-            data.append('items[' + key + '][mediaId]', mediaId);
-
-            delete pos.$image;
-            $.each(pos, function(k, v) {
-                data.append('items[' + key + '][' + k + ']', v);
-            });
-        });
-
-        $.ajax({
-            url: '{{ route('instagram.point.save-points') }}',
-            type: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': $('[name=_token]').val()
-            },
-            data: data,
-            cache: false,
-            dataType: 'json',
-            processData: false, // Don't process the files
-            contentType: false, // Set content type to false as jQuery will tell the server its a query string request
-            success: function(data, textStatus, jqXHR)
-            {
-                window.location.href = "{{ route('voyager.instagram-media.index') }}"
+            var mediaId = $(this).siblings('[name="id"]').val();
+            if (!mediaId.length) {
+                console.log('error: mediaId is empty');
                 return;
+            }
 
+            var data = new FormData();
 
-                if(typeof data.error === 'undefined')
+            data.append('mediaId', mediaId);
+
+            $items.each(function(key, $preview) {
+                var pos = $(this).data('pos');
+
+                // @todo files is option
+                try {
+                    if ($.type(pos.$image) == 'object') {
+                        var file = pos.$image[0].files[0];
+                        data.append(key, file);
+                    };
+                } catch (e) {
+                    console.log(e, 'error');
+                };
+
+                data.append('items[' + key + '][mediaId]', mediaId);
+
+                delete pos.$image;
+                $.each(pos, function(k, v) {
+                    data.append('items[' + key + '][' + k + ']', v);
+                });
+            });
+
+            $.ajax({
+                url: '{{ route('instagram.point.save-points') }}',
+                type: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': $('[name=_token]').val()
+                },
+                data: data,
+                cache: false,
+                dataType: 'json',
+                processData: false, // Don't process the files
+                contentType: false, // Set content type to false as jQuery will tell the server its a query string request
+                success: function(data, textStatus, jqXHR)
                 {
-                    // Success so call function to process the form
-                    submitForm(event, data);
-                }
-                else
+                    window.location.href = "{{ route('voyager.instagram-media.index') }}"
+                    return;
+
+
+                    if(typeof data.error === 'undefined')
+                    {
+                        // Success so call function to process the form
+                        submitForm(event, data);
+                    }
+                    else
+                    {
+                        // Handle errors here
+                        console.log('ERRORS: ' + data.error);
+                    }
+                },
+                error: function(jqXHR, textStatus, errorThrown)
                 {
                     // Handle errors here
-                    console.log('ERRORS: ' + data.error);
+                    console.log('ERRORS: ' + textStatus);
+                    // STOP LOADING SPINNER
                 }
-            },
-            error: function(jqXHR, textStatus, errorThrown)
-            {
-                // Handle errors here
-                console.log('ERRORS: ' + textStatus);
-                // STOP LOADING SPINNER
-            }
+            });
         });
+    };
 
-
-
-    });
+    image.src = $el.data('src');
 
 </script>
 @stop
