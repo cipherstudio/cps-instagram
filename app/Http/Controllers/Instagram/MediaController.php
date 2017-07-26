@@ -9,8 +9,6 @@ use TCG\Voyager\Http\Controllers\Traits\BreadRelationshipParser;
 
 class MediaController  extends \TCG\Voyager\Http\Controllers\VoyagerBreadController
 {
-    use BreadRelationshipParser;
-
     public function index(Request $request)
     {
         // GET THE SLUG, ex. 'posts', 'pages', etc.
