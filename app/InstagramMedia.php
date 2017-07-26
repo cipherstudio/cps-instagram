@@ -16,7 +16,7 @@ class InstagramMedia extends Model
      *
      * @var int
      */
-    protected $perPage = 20;
+    protected $perPage = 10;
 
     /**
      * Used for `frontend` page

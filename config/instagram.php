@@ -40,7 +40,7 @@ return [
 
     // pagination
     'page_size' => 12, // frontend
-    'sync_page_size' => 18, // backend
+    'sync_page_size' => 18, // sync page
     'sync_chunk_size' => 1, // used for auto sync and progress for end user
 
     // sync

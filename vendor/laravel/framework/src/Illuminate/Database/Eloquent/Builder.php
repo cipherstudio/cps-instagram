@@ -1247,6 +1247,7 @@ class Builder
             return $this->toBase()->{$method}(...$parameters);
         }
 
+
         $this->query->{$method}(...$parameters);
 
         return $this;

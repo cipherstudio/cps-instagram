@@ -26,11 +26,21 @@ Route::get('instagram/oauth', ['uses' => 'Instagram\SyncController@oauth', 'as' 
 
 // admin
 Route::group(['prefix' => 'admin'], function () {
+    
     Voyager::routes();
+    
 
     // @see vendor/tcg/voyager/routes/voyager.php
     $namespacePrefix = '\\'.config('voyager.controllers.namespace').'\\';
     Route::group(['middleware' => 'admin.user'], function () use ($namespacePrefix) {
+
+        // override
+        Route::resource('instagram-media', '\\App\Http\Controllers\Instagram\\MediaController', [
+            'only' => ['index'],
+            'names' => [
+                'index' => 'voyager.instagram-media.index'
+            ]
+        ]);
 
         // sync
         // @todo instagram-media/sync {closure}
@@ -47,5 +57,7 @@ Route::group(['prefix' => 'admin'], function () {
 
 
     });
+
+    
 
 });
