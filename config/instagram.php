@@ -7,9 +7,10 @@ return [
 
     'oauth' => [
         'url' => 'https://instagram.com/oauth/authorize',
+        'scope' => 'public_content',
         'app' => [
             'client_id' =>     '30f128278b88472da3c0602c615f9079',
-            'redirect_uri' =>  'http://instagram.cpsclothing.com/instagram/oauth',
+            'redirect_uri' =>  config('app.url') . '/instagram/oauth',
             'response_type' => 'token'
         ]
     ],
@@ -26,9 +27,9 @@ return [
 
 
     // account
-    #'user_id' => '209201990',
-    #'allow_custom_user' => false,
-
+    'allow_fixed_user' => true,
+    'user_id' => '209201990', // cps: 209201990, rcoco66: 11692348
+    
     'publisher_route_index' => 'voyager.instagram-media.index',
     // 'publisher_route_index' => 'instagram.sync.index',
 
@@ -40,6 +41,7 @@ return [
     // pagination
     'page_size' => 12, // frontend
     'sync_page_size' => 18, // backend
+    'sync_chunk_size' => 1, // used for auto sync and progress for end user
 
     // sync
     'allow_duplicates' => false,

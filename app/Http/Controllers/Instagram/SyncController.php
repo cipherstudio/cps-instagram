@@ -27,10 +27,6 @@ class SyncController extends \TCG\Voyager\Http\Controllers\VoyagerBreadControlle
         //
         // @see https://stackoverflow.com/questions/2317508/get-fragment-value-after-hash-from-a-url-in-php
 
-        #$accessToken = $request->cookie('instagram_access_token');
-        // $accessToken = $_COOKIE['instagram_access_token'];
-        // zf_dump($accessToken);
-
         return view('instagram.oauth');
     }
 
@@ -163,7 +159,7 @@ class SyncController extends \TCG\Voyager\Http\Controllers\VoyagerBreadControlle
         }
 
         $syncUrl = route('instagram.sync.load');
-        $syncData = $sync->getSyncData($url);
+        $syncData = $sync->getSyncData($url, config('instagram.sync_chunk_size'));
 
         // invalid token after :getSyncData()
         if ($sync->isTokenError()) {

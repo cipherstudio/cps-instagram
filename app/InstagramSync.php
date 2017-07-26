@@ -71,7 +71,11 @@ class InstagramSync extends Model
         $config = $this->getConfig();
 
         $args = $config['oauth']['app'];
-        $args['state'] = rand(100, 999);
+        if (isset($config['oauth']['scope']) && !empty($config['oauth']['scope'])) {
+            $args['scope'] = $config['oauth']['scope'];
+        }
+
+        $args['state'] = sprintf('%03d', rand(0, 999));
 
         $url = $config['oauth']['url'] . '?' .http_build_query($args);
         return $url;
@@ -140,6 +144,7 @@ class InstagramSync extends Model
 
             if ($status != 200) {
                 $errorMsg = trim(explode("\n", $header)[0]);
+                zf_dump($header, '$header');
                 throw new \Exception($errorMsg);
             }
 
@@ -148,6 +153,10 @@ class InstagramSync extends Model
             $data = json_decode($body, true);
 
         } catch (\Exception $e) {
+
+            zf_dump($e->getMessage());
+            exit;
+
             if ($error = json_decode($body)) {
                 if ($error->meta->code == 400 || $error->meta->error_type == 'OAuthAccessTokenException') {
                     // clear external, not auto now
@@ -164,23 +173,27 @@ class InstagramSync extends Model
         return $this->tokenError;
     }
 
-    public function getSyncData($url = '')
+    public function getSyncData($url = '', $count = null)
     {
         $config = $this->getConfig();
+        if (!$count) {
+            $count = $this->getItemCountPerPage();
+        }
 
         if (!$url) {
-            $accountUrl = $this->getEndpointUrl('get_current_account') . '?' . http_build_query(array('access_token' => $this->getAccessToken()));
-            $data = $this->request($accountUrl);
-            $userId = $data['data']['id'];
+
+            if ($config['allow_fixed_user']) {
+                $userId = $config['user_id'];
+            } else {
+                $accountUrl = $this->getEndpointUrl('get_current_account') . '?' . http_build_query(array('access_token' => $this->getAccessToken()));
+                $data = $this->request($accountUrl);
+                $userId = $data['data']['id'];
+            }
 
             $queryString = http_build_query(array(
                 'access_token' => $this->getAccessToken(), 
-                'count' => $this->getItemCountPerPage()
+                'count' => $count
             ));
-
-            // @todo get public_content review?
-            // $userId = '11692348'; // rcoco66
-            // $userId = '209201990'; // cps
 
             $url = $this->getApiUrl() . '/users/' . $userId . '/media/recent' . '?' . $queryString;
         }
