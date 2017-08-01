@@ -31,7 +31,7 @@
         <div class="panel-body" style="padding-top:0;">
 
             <!-- Standard Resolution is 640px -->
-            <div class="row" style="margin: auto;">
+            <div class="row" style="margin: auto; max-width:1020px">
                 <div class="col-sm-8" style="padding:0">
                     <img class="photo-tags" data-src="{{ Voyager::image($dataTypeContent->url) }}">
                 </div>
@@ -92,14 +92,16 @@
     var image = new $('.photo-tags')[0];
     image.onload = function(evt) {
 
-        if (this.width == 640 && this.height == 640) {
-            $el.parents('.row:first').css('max-width', '1080px');
-        };
+        // console.log('width: ' + this.width + ', height: ' + this.height);
 
-        var photoTags = $el.photoTags().data('photoTags');
+        // if (this.width == 640 && this.height == 640) {
+        //     $el.parents('.row:first').css('max-width', '1080px');
+        // };
+
+        var photoTags = $el.photoTags({width: this.width, height: this.height}).data('photoTags');
         $.each(points, function(key, point) {
             point.$image = point.imageUrl;
-            photoTags.createTag(point);
+            photoTags.createTag(point, true);
         });
 
         $('.instagram-point-points').click(function(e) {

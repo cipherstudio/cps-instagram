@@ -48,6 +48,10 @@ Route::group(['prefix' => 'admin'], function () {
         Route::get('instagram-media-sync/load', ['uses' => 'Instagram\SyncController@load', 'as' => 'instagram.sync.load']);
         Route::post('instagram-media-sync/import', ['uses' => 'Instagram\SyncController@import', 'as' => 'instagram.sync.import']);
 
+        // crawler
+        Route::get('instagram-crawler/install', ['uses' => 'Instagram\CrawlerController@install', 'as' => 'instagram.crawler.install']);
+        Route::get('instagram-crawler/load', ['uses' => 'Instagram\CrawlerController@load', 'as' => 'instagram.crawler.load']);
+
         // auto sync
         Route::post('instagram-media-sync/sync', ['uses' => 'Instagram\SyncController@sync', 'as' => 'instagram.sync.sync']);
 

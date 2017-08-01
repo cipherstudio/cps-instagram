@@ -55,7 +55,7 @@
                                         <td>
                                             <?php $options = json_decode($row->details); ?>
                                             @if($row->type == 'image')
-                                                <img src="@if( strpos($data->{$row->field}, 'http://') === false && strpos($data->{$row->field}, 'https://') === false){{ Voyager::image( $data->{$row->field} ) }}@else{{ $data->{$row->field} }}@endif" style="width:100px">
+                                                <img src="@if( strpos($data->{$row->field}, 'http://') === false && strpos($data->{$row->field}, 'https://') === false){{ Voyager::image( $data->{$row->field} ) }}@else{{ $data->{$row->field} }}@endif" data-toggle="tooltip" title="{{ ucfirst($data->type) }}" style="width:100px">
                                             @elseif($row->type == 'select_multiple')
                                                 @if(property_exists($options, 'relationship'))
 
@@ -122,7 +122,7 @@
                                             </a>
                                         @endif
                                         @if (Voyager::can('edit_'.$dataType->name))
-                                            <a href="{{ route('instagram.point.points', $data->id) }}" title="Edit" class="btn btn-sm btn-success pull-right edit">
+                                            <a href="{{ route('instagram.point.points', $data->id) }}" title="Pointing" class="btn btn-sm btn-success pull-right edit @if( $data->type != 'image') disabled @endif">
                                                 <i class="voyager-edit"></i> <span class="hidden-xs hidden-sm">Pointing</span>
                                             </a>
                                             @if ($role_name == 'admin')

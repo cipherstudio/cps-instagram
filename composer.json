@@ -8,6 +8,7 @@
         "php": ">=5.6.4",
         "laravel/framework": "5.4.*",
         "laravel/tinker": "~1.0",
+        "smochin/instagram-php-crawler": "^1.0",
         "tcg/voyager": "^0.11.14"
     },
     "require-dev": {

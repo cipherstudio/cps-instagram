@@ -12,9 +12,16 @@
             previewContainer: '',
             size: 28,
             radius: '50%',
-            backgroundColor: '#fff'
+            backgroundColor: '#fff',
+
+            width: 0,
+            height: 0,
+            maxWidth: 640,
+            maxHeight: 640
 
         }, o );
+
+        
 
         if (!options.previewContainer.length) {
             options.previewContainer = '.' + options.prefix + '-preview'
@@ -37,6 +44,24 @@
 
             init: function() {
                 var self = this;
+
+                // @todo resize image
+                // console.log(self.options, 'self.options');
+                var width = self.options.width,
+                    height = self.options.hieght,
+                    maxWidth = self.options.maxWidth,
+                    maxHeight = self.options.maxHeight;
+                if ((maxWidth <= width) || (maxHeight <= height)) {
+
+                    if (width == height) {
+                        $el.width(maxWidth).height(maxWidth);
+                    } else if (width > height) {
+                        $el.width(maxWidth).height( (maxWidth * height / width).toFixed(2) );
+                    } else {
+                        $el.width( (maxHeight * width / height).toFixed(2) ).height(maxHeight);
+                    };
+
+                };
 
                 //$el.attr('draggable', false);
                     
@@ -175,11 +200,13 @@
             },
 
             createTag: function(pos) {
-                var self = this;
+                var self = this,
+                    doNotRePos = arguments[1] || false;
+
                 var $tag = $('<div class="' + this.prefix + '-tag"><span>' + pos.number + '</span></div>')
                     .appendTo(this.$wrapper);
 
-                this.updateTag(pos, $tag);
+                this.updateTag(pos, $tag, doNotRePos);
 
                 if (this.options.editable) {
                     var cursor = 'move';
@@ -211,15 +238,39 @@
 
             updateTag: function(pos, $tag) {
                 var self = this,
+                    doNotRePos = arguments[2] || false;
                     gap = this.getGap();
+
+                console.log('width: ' + this.options.width + ', height: ' + this.options.height 
+                    + ', maxWidth: ' + this.options.maxWidth + ', maxHeight: ' + this.options.maxHeight);
+
+                console.log('posX: ' + pos.posX + ', posY: ' + pos.posY);
+
+                // calc new pos for image ration
+                var _posX = pos.posX,
+                    _posY = pos.posY;
+
+                console.log(doNotRePos, 'doNotRePos');
+
+                if (doNotRePos) {
+                    _posX = ($el.width() * pos.posX / this.options.width).toFixed(2);
+                    _posY = ($el.height() * pos.posY / this.options.height).toFixed(2);
+                } else {
+                    pos.posX = (this.options.width * pos.posX / $el.width()).toFixed(2),
+                    pos.posY = (this.options.height * pos.posY / $el.height()).toFixed(2);
+                };
+
+                console.log('posX: ' + _posX + ', posY: ' + _posY);
 
                 $tag
                     .find('> span:first')
                         .text(pos.number)
                     .end()
                     .css({
-                        left: (pos.posX - gap),
-                        top: (pos.posY - gap)
+                        // left: (pos.posX - gap),
+                        // top: (pos.posY - gap)
+                        left: (_posX - gap),
+                        top: (_posY - gap)
                     })
                     .data('pos', pos);
             },
@@ -253,7 +304,7 @@
 
                     // update tag
                     pos.number = number;
-                    self.updateTag(pos, $tag);
+                    self.updateTag(pos, $tag, true);
 
                     if ($.type($tag.$preview) !== 'undefined') {
                         self.updatePreview(pos, $tag.$preview);
